@@ -2,9 +2,12 @@ package com.github.devjn.githubsearch
 
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -12,10 +15,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.github.devjn.githubsearch.databinding.ActivityUserDetailsBinding
+import com.github.devjn.githubsearch.utils.GitHubApi
+import com.github.devjn.githubsearch.utils.GithubService
 import com.github.devjn.githubsearch.utils.User
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
-
-
+import java.util.*
 
 
 class UserDetailsActivity : AppCompatActivity() {
@@ -29,15 +35,19 @@ class UserDetailsActivity : AppCompatActivity() {
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_user_details)
         setupTransition()
         setSupportActionBar(binding.toolbar)
-
+        val colors = intArrayOf(R.drawable.gradient_01, R.drawable.gradient_02, R.drawable.gradient_03, R.drawable.gradient_04)
+        binding.toolbarLayout.setBackgroundResource(colors[Random().nextInt(4)])
         binding.fab.setOnClickListener { view ->
             isChecked = !isChecked
-            val stateSet = intArrayOf(android.R.attr.state_checked * if (isChecked) 1 else -1)
-            binding.fab.setImageState(stateSet, true)
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            var drawable: Drawable
+            if (isChecked) {
+                drawable = VectorDrawableCompat.create(resources, R.drawable.ic_bookmarked, null)!!
+                drawable = DrawableCompat.wrap(drawable)
+                DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.star_pressed))
+            } else drawable = VectorDrawableCompat.create(resources, R.drawable.ic_bookmark, null)!!
+            binding.fab.setImageDrawable(drawable)
         }
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -75,6 +85,15 @@ class UserDetailsActivity : AppCompatActivity() {
                 return false
             }
         }).into(binding.imageProfile)
+
+        val gitHubApi = GithubService.createService(GitHubApi::class.java)
+        gitHubApi.getUser(data.login).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ user ->
+                    binding.content.user = user
+                }, { e ->
+                    Log.e(TAG, "Error while getting data", e)
+                })
     }
 
 }

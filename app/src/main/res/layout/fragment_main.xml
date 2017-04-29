@@ -5,7 +5,7 @@
         tools:context="com.github.devjn.githubusers.SearchFragment"
         tools:showIn="@layout/activity_main">
 
-    <FrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -61,5 +61,5 @@
             app:floatingSearch_showSearchKey="true"
             app:floatingSearch_suggestionsListAnimDuration="250"/>
 
-    </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -46,7 +46,7 @@ fun loadImage(imageView: ImageView, url: String?) {
  * devjn@jn-arts.com
  * SearchFragment
  */
-class SearchFragment<T : GitObject> : BaseFragment() {
+class SearchFragment<T : GitObject>() : BaseFragment() {
 
     val TAG = SearchFragment::class.simpleName
 
@@ -193,7 +193,7 @@ class SearchFragment<T : GitObject> : BaseFragment() {
                     mLastGitData = gitData
                     checkEmptyView()
                 }, { e ->
-                    Snackbar.make(baseActivity.getRoot(), R.string.connection_problem, Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, R.string.connection_problem, Snackbar.LENGTH_LONG)
                             .setAction(R.string.retry, { search(query) }).show()
                     binding.progressBar.visibility = View.GONE
                     Log.e(TAG, "Error while getting data", e)
@@ -210,7 +210,7 @@ class SearchFragment<T : GitObject> : BaseFragment() {
                     gitData.items?.let { mData.addAll(it) }
                     rxDataSource.updateDataSet(mData).updateNotifyInsertedAdapter(count, mData.size)
                 }, { e ->
-                    Snackbar.make(baseActivity.getRoot(), R.string.connection_problem, Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, R.string.connection_problem, Snackbar.LENGTH_LONG)
                             .setAction(R.string.retry, { search(mLastQuery) }).show()
                     Log.e(TAG, "Error while getting data", e)
                 })

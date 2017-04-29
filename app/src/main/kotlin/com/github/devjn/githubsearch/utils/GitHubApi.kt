@@ -2,6 +2,7 @@ package com.github.devjn.githubsearch.utils
 
 import io.reactivex.Observable
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -17,6 +18,9 @@ interface GitHubApi {
 
     @GET("/search/repositories")
     fun getRepositories(@Query("q") keyword: String, @Query("page") page: Int = 1): Observable<GitData<Repository>>
+
+    @GET("/users/{username}")
+    fun getUser(@Path("username") username: String): Observable<User>
 
 }
 

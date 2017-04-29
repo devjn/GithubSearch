@@ -43,6 +43,13 @@ class User : GitObject, PaperParcelable {
     val login: String;
     val avatar_url: String;
 
+    // Optional
+    var name: String? = null
+    var email: String? = null
+    var bio: String? = null
+    var company: String? = null
+    var location: String? = null
+
     constructor() {
         this.login = ""
         this.url = ""
