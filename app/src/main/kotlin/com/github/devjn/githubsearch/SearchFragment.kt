@@ -50,7 +50,7 @@ class SearchFragment<T : GitObject> : BaseFragment() {
 
     val TAG = SearchFragment::class.simpleName
 
-    private var mData: ArrayList<T> = ArrayList<T>()
+    private var mData: ArrayList<T> = ArrayList()
     private var mType: Int = TYPE_USERS
 
     private lateinit var binding: FragmentMainBinding
@@ -60,15 +60,17 @@ class SearchFragment<T : GitObject> : BaseFragment() {
 
     private lateinit var rxDataSource: RxDataSource<T>
     private val onClickSubject = PublishSubject.create<ViewDataBinding>()
+    private val gitHubApi = GithubService.createService(GitHubApi::class.java)
 
+    private lateinit var scrollListener: EndlessRecyclerViewScrollListener
     private lateinit var suggestionAdapter: SuggestionAdapter
     private lateinit var suggestions: SearchRecentSuggestions
+    private var mLastGitData: GitData<T>? = null
     private var mLastQuery = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-//        setHasOptionsMenu(true)
 
         val args = arguments
         args?.let {
@@ -85,6 +87,12 @@ class SearchFragment<T : GitObject> : BaseFragment() {
         mRecyclerView.itemAnimator = DefaultItemAnimator()
         val mDividerItemDecoration = DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation)
         mRecyclerView.addItemDecoration(mDividerItemDecoration)
+        scrollListener = object : EndlessRecyclerViewScrollListener(mLayoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                loadMore(page, totalItemsCount)
+            }
+        }
+        mRecyclerView.addOnScrollListener(scrollListener)
         binding.emptyText.text = getString(if (mType == TYPE_USERS) R.string.find_users else R.string.find_repos)
         mSearchView = binding.floatingSearchView
         setupSearchView()
@@ -93,7 +101,7 @@ class SearchFragment<T : GitObject> : BaseFragment() {
     }
 
     private fun setupSearchView() {
-        val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager;
+        val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         suggestionAdapter = SuggestionAdapter(activity, searchManager)
 
         mSearchView.setOnQueryChangeListener { oldQuery, newQuery ->
@@ -157,35 +165,54 @@ class SearchFragment<T : GitObject> : BaseFragment() {
             val intent = Intent(context, UserDetailsActivity::class.java)
             // Pass data object in the bundle and populate details activity.
             val imageView = (bind as ListItemUserBinding).imageUser
-            intent.putExtra(EXTRA_DATA, bind.user);
-            intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, getTransitionName(imageView));
+            intent.putExtra(EXTRA_DATA, bind.user)
+            intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, getTransitionName(imageView))
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                    imageView, ViewCompat.getTransitionName(imageView));
-            startActivity(intent, options.toBundle());
+                    imageView, ViewCompat.getTransitionName(imageView))
+            startActivity(intent, options.toBundle())
         }
-        suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE);
+        suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE)
     }
 
 
     private fun search(query: String) {
+        // reset infinite scroll
+        scrollListener.resetState()
         suggestions.saveRecentQuery(query, null)
         binding.progressBar.visibility = View.VISIBLE
-        val gitHubApi = GithubService.createService(GitHubApi::class.java)
-        val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(query) as Observable<GitData<T>>
-        else gitHubApi.getRepositories(query) as Observable<GitData<T>>
+
+        val api: Observable<GitData<T>> =
+                (if (mType == TYPE_USERS) gitHubApi.getUsers(query) else gitHubApi.getRepositories(query)) as Observable<GitData<T>>
         api.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ users ->
+                .subscribe({ gitData ->
                     mData.clear()
-                    users.items?.let { mData.addAll(it) }
+                    gitData.items?.let { mData.addAll(it) }
                     rxDataSource.updateDataSet(mData).updateAdapter()
                     binding.progressBar.visibility = View.GONE
+                    mLastGitData = gitData
                     checkEmptyView()
                 }, { e ->
-                    Snackbar.make(baseActivity.getRoot(), "Cannot connect", Snackbar.LENGTH_LONG)
+                    Snackbar.make(baseActivity.getRoot(), R.string.connection_problem, Snackbar.LENGTH_LONG)
                             .setAction(R.string.retry, { search(query) }).show()
                     binding.progressBar.visibility = View.GONE
-                    Log.e(TAG, "Error fetching data: " + e)
+                    Log.e(TAG, "Error while getting data", e)
+                })
+    }
+
+    private fun loadMore(page: Int, count: Int) {
+        if (mLastGitData?.total_count == count) return
+        val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(mLastQuery, page) as Observable<GitData<T>>
+        else gitHubApi.getRepositories(mLastQuery, page) as Observable<GitData<T>>
+        api.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ gitData ->
+                    gitData.items?.let { mData.addAll(it) }
+                    rxDataSource.updateDataSet(mData).updateNotifyInsertedAdapter(count, mData.size)
+                }, { e ->
+                    Snackbar.make(baseActivity.getRoot(), R.string.connection_problem, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.retry, { search(mLastQuery) }).show()
+                    Log.e(TAG, "Error while getting data", e)
                 })
     }
 

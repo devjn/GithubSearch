@@ -20,7 +20,9 @@ class MainActivity : BaseActivity() {
         this.binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        binding.navigation.selectedItemId = R.id.navigation_users
+        // Set only when savedInstanceState is null to preserve state
+        if (savedInstanceState == null)
+            binding.navigation.selectedItemId = R.id.navigation_users
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->

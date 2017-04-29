@@ -102,4 +102,5 @@
     </string>
     <string name="search_hint">Search…</string>
     <string name="suggestion_authority">com.github.devjn.githubsearch.utils.SuggestionProvider</string>
+    <string name="connection_problem">Sorry, connection error</string>
 </resources>
