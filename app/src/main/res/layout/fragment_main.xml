@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.github.devjn.githubusers.SearchFragment"
+        tools:showIn="@layout/activity_main">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/list_item_user"/>
+
+        <TextView
+            android:id="@+id/emptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <!--        <com.arlib.floatingsearchview.FloatingSearchView
+                    android:id="@+id/floating_search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:floatingSearch_close_search_on_keyboard_dismiss="false"
+                    app:floatingSearch_leftActionMode="showSearch"
+                    app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+                    app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+                    app:floatingSearch_searchHint="Search..."
+                    app:floatingSearch_showSearchKey="true"
+                    app:floatingSearch_suggestionsListAnimDuration="250"/>-->
+
+    </FrameLayout>
+</layout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_repos"
+        android:icon="@drawable/ic_git_repos"
+        android:title="@string/title_repos"/>
+
+    <item
+        android:id="@+id/navigation_users"
+        android:icon="@drawable/ic_github_face"
+        android:title="@string/title_users"/>
+
+    <item
+        android:id="@+id/navigation_bookmarks"
+        android:icon="@drawable/ic_bookmarked"
+        android:title="@string/title_bookmarks"/>
+
+</menu>

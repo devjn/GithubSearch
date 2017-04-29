@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.NoActionBar" parent="Base.AppTheme.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowEnterTransition">@transition/auto_transition</item>
+        <item name="android:windowExitTransition">@transition/auto_transition</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/shared_element</item>
+        <item name="android:windowSharedElementExitTransition">@transition/shared_element</item>
+    </style>
+
+</resources>
