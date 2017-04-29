@@ -1,6 +1,5 @@
 package com.github.devjn.githubsearch.utils
 
-import android.os.Parcel
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -84,15 +83,31 @@ class Repository : GitObject, PaperParcelable {
         this.language = language
     }
 
-    private constructor(inParcel: Parcel) {
-        url = inParcel.readString()
-        full_name = inParcel.readString()
-        description = inParcel.readString()
-        language = inParcel.readString()
-    }
-
     companion object {
         @JvmField val CREATOR = PaperParcelRepository.CREATOR
+    }
+
+}
+
+class PinnedRepo {
+
+    val repo: String;
+    val owner: String;
+    val description: String;
+    val language: String;
+
+    constructor() {
+        this.repo = ""
+        this.owner = ""
+        this.description = ""
+        this.language = ""
+    }
+
+    constructor(full_name: String, url: String, description: String, language: String) {
+        this.repo = full_name
+        this.owner = url
+        this.description = description
+        this.language = language
     }
 
 }

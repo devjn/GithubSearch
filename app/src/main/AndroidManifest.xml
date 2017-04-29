@@ -16,7 +16,7 @@
         <provider
             android:name="com.github.devjn.githubsearch.utils.SuggestionProvider"
             android:authorities="@string/suggestion_authority"
-            android:exported="false"/>
+            android:exported="true"/>
 
 
         <activity

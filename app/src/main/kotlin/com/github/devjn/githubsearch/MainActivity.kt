@@ -13,11 +13,11 @@ import com.github.devjn.githubsearch.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(binding.toolbar)
+        this.binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         binding.navigation.selectedItemId = R.id.navigation_users
@@ -26,13 +26,13 @@ class MainActivity : BaseActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_repos -> {
-                getSupportFragmentManager().beginTransaction().replace(
+                supportFragmentManager.beginTransaction().replace(
                         R.id.container, SearchFragment.newInstance(SearchFragment.TYPE_REPOSITORIES))
                         .commit();
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_users -> {
-                getSupportFragmentManager().beginTransaction().replace(
+                supportFragmentManager.beginTransaction().replace(
                         R.id.container, SearchFragment.newInstance(SearchFragment.TYPE_USERS))
                         .commit();
                 return@OnNavigationItemSelectedListener true
@@ -61,6 +61,6 @@ class MainActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun getRoot(): View = findViewById(R.id.coordinator)
+    override fun getRoot(): View = binding.coordinator
 
 }

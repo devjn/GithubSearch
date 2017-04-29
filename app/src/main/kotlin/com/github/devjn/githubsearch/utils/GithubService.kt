@@ -13,15 +13,22 @@ import retrofit2.converter.gson.GsonConverterFactory
 object GithubService {
 
     private val BASE_URL = "https://api.github.com/"
+    private val PIN_BASE_URL = "https://gh-pinned-repos.now.sh/"
 
     private val builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 
+    private val pinBuilder = Retrofit.Builder()
+            .baseUrl(PIN_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+
     fun <S> createService(serviceClass: Class<S>): S {
-        val retrofit = builder.build()
+        val retrofit = if(serviceClass is PinnedReposApi) pinBuilder.build() else builder.build()
         return retrofit.create(serviceClass)
     }
+
 
 }

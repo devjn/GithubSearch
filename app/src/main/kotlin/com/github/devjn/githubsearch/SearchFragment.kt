@@ -12,10 +12,17 @@ import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewCompat.getTransitionName
-import android.support.v7.widget.*
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import com.arlib.floatingsearchview.FloatingSearchView
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.bumptech.glide.Glide
 import com.github.devjn.githubsearch.databinding.FragmentMainBinding
 import com.github.devjn.githubsearch.databinding.ListItemRepositoryBinding
@@ -49,17 +56,19 @@ class SearchFragment<T : GitObject> : BaseFragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mLayoutManager: LinearLayoutManager
-    private lateinit var mSearchView: SearchView
+    private lateinit var mSearchView: FloatingSearchView
 
     private lateinit var rxDataSource: RxDataSource<T>
     private val onClickSubject = PublishSubject.create<ViewDataBinding>()
 
+    private lateinit var suggestionAdapter: SuggestionAdapter
     private lateinit var suggestions: SearchRecentSuggestions
+    private var mLastQuery = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        setHasOptionsMenu(true)
+//        setHasOptionsMenu(true)
 
         val args = arguments
         args?.let {
@@ -77,63 +86,55 @@ class SearchFragment<T : GitObject> : BaseFragment() {
         val mDividerItemDecoration = DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation)
         mRecyclerView.addItemDecoration(mDividerItemDecoration)
         binding.emptyText.text = getString(if (mType == TYPE_USERS) R.string.find_users else R.string.find_repos)
+        mSearchView = binding.floatingSearchView
+        setupSearchView()
         checkEmptyView()
         return binding.root
     }
 
     private fun setupSearchView() {
-        val searchManager: SearchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager;
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName));
+        val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager;
+        suggestionAdapter = SuggestionAdapter(activity, searchManager)
 
-        mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
+        mSearchView.setOnQueryChangeListener { oldQuery, newQuery ->
+            if (oldQuery != "" && newQuery == "") {
+                mSearchView.clearSuggestions()
+            } else {
+                //this shows the top left circular progress
+                mSearchView.showProgress()
+                val list = suggestionAdapter.getSuggestions(newQuery, 5)
+                //this will swap the data and render the collapse/expand animations as necessary
+                list?.let { mSearchView.swapSuggestions(list) } ?: mSearchView.clearSuggestions()
+                mSearchView.hideProgress()
+            }
+        }
+
+        mSearchView.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
+            override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
+                mLastQuery = searchSuggestion.body
+                search(mLastQuery)
+                Log.d(TAG, "onSuggestionClicked()")
+            }
+
+            override fun onSearchAction(query: String) {
+                mLastQuery = query
                 search(query)
                 Log.d(TAG, "onSearchAction, query: $query")
-                suggestions.saveRecentQuery(query, null);
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-//                adapter.getFilter().filter(newText)
-                return false
             }
         })
-//        mSearchView.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
-//            override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
-//
-//            }
-//
-//            override fun onSearchAction(query: String) {
-//                search(query)
-//                Log.d(TAG, "onSearchAction, query: $query")
-//            }
-//        })
-    }
 
-    lateinit var searchItem: MenuItem
+        mSearchView.setOnFocusChangeListener(object : FloatingSearchView.OnFocusChangeListener {
+            override fun onFocus() {
+                //show history when search bar gains focus
+                mSearchView.swapSuggestions(suggestionAdapter.getSuggestions("", 3))
+            }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search, menu);
-        val searchItem = menu.findItem(R.id.action_search);
+            override fun onFocusCleared() {
+                //set the title of the bar so that when focus is returned a new query begins
+                mSearchView.setSearchText(mLastQuery) //BarTitle(mLastQuery)
+            }
+        })
 
-        if (searchItem != null) {
-            mSearchView = searchItem.actionView as SearchView;
-        }
-        if (mSearchView != null) {
-            setupSearchView()
-//            searchItem.expandActionView();
-//            this.searchItem = searchItem;
-        }
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.getItemId()) {
-            R.id.action_search ->
-                // Not implemented here
-                return false
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -163,13 +164,11 @@ class SearchFragment<T : GitObject> : BaseFragment() {
             startActivity(intent, options.toBundle());
         }
         suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE);
-//        baseActivity.findViewById(R.id.search_action)?.setOnClickListener {
-//            searchItem.expandActionView()
-//        }
     }
 
 
     private fun search(query: String) {
+        suggestions.saveRecentQuery(query, null)
         binding.progressBar.visibility = View.VISIBLE
         val gitHubApi = GithubService.createService(GitHubApi::class.java)
         val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(query) as Observable<GitData<T>>
@@ -197,9 +196,9 @@ class SearchFragment<T : GitObject> : BaseFragment() {
     }
 
     override fun onBackPressedCaptured(): Boolean {
-//        if (!mSearchView.setSearchFocused(false)) {
-//            return false
-//        }
+        if (mSearchView.setSearchFocused(false)) {
+            return true
+        }
         return super.onBackPressedCaptured()
     }
 

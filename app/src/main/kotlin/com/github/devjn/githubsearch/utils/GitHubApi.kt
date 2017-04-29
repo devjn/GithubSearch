@@ -19,3 +19,10 @@ interface GitHubApi {
     fun getRepositories(@Query("q") keyword: String): Observable<GitData<Repository>>
 
 }
+
+interface PinnedReposApi {
+
+    @GET("")
+    fun getPinnedRepos(@Query("username") username: String): Observable<List<PinnedRepo>>
+
+}
