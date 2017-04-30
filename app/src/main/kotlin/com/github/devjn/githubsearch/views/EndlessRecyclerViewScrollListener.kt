@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch.utils
+package com.github.devjn.githubsearch.views
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager

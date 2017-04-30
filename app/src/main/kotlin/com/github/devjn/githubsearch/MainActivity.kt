@@ -6,8 +6,6 @@ import android.support.design.widget.BottomNavigationView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import android.widget.Toast.makeText
 import com.github.devjn.githubsearch.databinding.ActivityMainBinding
 
 
@@ -40,7 +38,9 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_bookmarks -> {
-                makeText(this@MainActivity, "Not implemented", Toast.LENGTH_SHORT).show()
+                supportFragmentManager.beginTransaction().replace(
+                        R.id.container, BookmarksFragment())
+                        .commit();
                 return@OnNavigationItemSelectedListener true
             }
         }

@@ -42,6 +42,7 @@ class User : GitObject, PaperParcelable {
     override val url: String;
     val login: String;
     val avatar_url: String;
+    val id: Long
 
     // Optional
     var name: String? = null
@@ -51,16 +52,27 @@ class User : GitObject, PaperParcelable {
     var location: String? = null
 
     constructor() {
+        this.id = 0
         this.login = ""
         this.url = ""
         this.avatar_url = ""
     }
 
-    constructor(login: String, url: String, avatar_url: String) {
+    constructor(id: Long, login: String, url: String, avatar_url: String) {
+        this.id = id
         this.login = login
         this.url = url
         this.avatar_url = avatar_url
     }
+
+    fun hasExtra(): Boolean {
+        var has = false
+        Utils.whenAnyNotNull(name, email, bio, company, location) {
+            has = true
+        }
+        return has
+    }
+
 
     companion object {
         @JvmField val CREATOR = PaperParcelUser.CREATOR
@@ -98,10 +110,10 @@ class Repository : GitObject, PaperParcelable {
 
 class PinnedRepo {
 
-    val repo: String;
-    val owner: String;
-    val description: String;
-    val language: String;
+    val repo: String
+    val owner: String?
+    val description: String?
+    val language: String?
 
     constructor() {
         this.repo = ""

@@ -31,9 +31,9 @@ public class MockGithubService implements GitHubApi {
     @Override
     public Observable<GitData<User>> getUsers(@NotNull String keyword, int page) {
         List<User> users = new ArrayList<>(3);
-        users.add(new User("devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
-        users.add(new User("devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
-        users.add(new User("devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
+        users.add(new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
+        users.add(new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
+        users.add(new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3"));
         GitData<User> data = new GitData<>(3, false, users);
         return delegate.returningResponse(data).getUsers("devjn", 1);
     }
@@ -47,7 +47,7 @@ public class MockGithubService implements GitHubApi {
     @NotNull
     @Override
     public Observable<User> getUser(@NotNull String username) {
-        User user = new User("devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3");
+        User user = new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3");
         user.setName("John");
         user.setBio("Some bio");
         user.setLocation("Finland");

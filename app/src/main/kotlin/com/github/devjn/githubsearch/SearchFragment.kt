@@ -20,25 +20,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.arlib.floatingsearchview.FloatingSearchView
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
-import com.bumptech.glide.Glide
 import com.github.devjn.githubsearch.databinding.FragmentMainBinding
 import com.github.devjn.githubsearch.databinding.ListItemRepositoryBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
 import com.github.devjn.githubsearch.utils.*
+import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
-
-@android.databinding.BindingAdapter("bind:imageUrl")
-fun loadImage(imageView: ImageView, url: String?) {
-    Glide.with(imageView.context).load(url).into(imageView)
-}
 
 @Suppress("UNCHECKED_CAST")
 /**

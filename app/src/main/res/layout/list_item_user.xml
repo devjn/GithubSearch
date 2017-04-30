@@ -24,8 +24,9 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="16dp"
             android:scaleType="centerCrop"
-            app:imageUrl="@{user.avatar_url}"
             android:transitionName="@{user.login}"
+            app:imageUrl="@{user.avatar_url}"
+            tools:ignore="UnusedAttribute"
             tools:src="@mipmap/ic_launcher"/>
 
         <TextView

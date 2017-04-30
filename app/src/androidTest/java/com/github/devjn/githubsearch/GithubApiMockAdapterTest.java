@@ -67,7 +67,7 @@ public class GithubApiMockAdapterTest {
         assertEquals(3, data.getTotal_count());
         List<User> users = data.getItems();
         assertNotNull(users);
-        User expectedUser = new User("devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3");
+        User expectedUser = new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3");
         User receivedUser = users.get(0);
         assertEquals(expectedUser.getLogin(), receivedUser.getLogin());
         assertEquals(expectedUser.getUrl(), receivedUser.getUrl());

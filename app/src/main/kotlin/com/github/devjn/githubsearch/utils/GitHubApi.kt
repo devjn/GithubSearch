@@ -26,7 +26,7 @@ interface GitHubApi {
 
 interface PinnedReposApi {
 
-    @GET("")
+    @GET("/")
     fun getPinnedRepos(@Query("username") username: String): Observable<List<PinnedRepo>>
 
 }

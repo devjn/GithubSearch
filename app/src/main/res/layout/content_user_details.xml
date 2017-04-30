@@ -23,14 +23,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
+            android:layout_margin="@dimen/spacing_medium"
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:layout_marginTop="@dimen/spacing_small"
                 android:visibility="@{user != null ? View.VISIBLE:View.GONE}"
                 app:cardCornerRadius="2dp">
 
@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:divider="@drawable/empty_small_divider"
                     android:orientation="vertical"
-                    android:padding="8dp"
+                    android:padding="@dimen/spacing_small"
                     android:showDividers="middle">
 
                     <TextView
@@ -49,48 +49,85 @@
                         android:textColor="@color/colorAccent"/>
 
                     <TextView
-                        android:visibility="@{user.name != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.name}"
+                        android:visibility="@{user.name != null ? View.VISIBLE:View.GONE}"
                         tools:text="name"/>
 
                     <TextView
-                        android:visibility="@{user.bio != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.bio}"
+                        android:visibility="@{user.bio != null ? View.VISIBLE:View.GONE}"
                         tools:text="bio"/>
 
                     <TextView
-                        android:visibility="@{user.company != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.company}"
+                        android:visibility="@{user.company != null ? View.VISIBLE:View.GONE}"
                         tools:text="company"/>
 
                     <TextView
-                        android:visibility="@{user.location != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.location}"
+                        android:visibility="@{user.location != null ? View.VISIBLE:View.GONE}"
                         tools:text="location"/>
 
                     <TextView
-                        android:visibility="@{user.email != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.email}"
+                        android:visibility="@{user.email != null ? View.VISIBLE:View.GONE}"
                         tools:text="email"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/empty_info"
+                        android:visibility="@{ user.hasExtra ? View.GONE:View.VISIBLE}"
+                        tools:text="email"/>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/pinned_root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_small"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:visibility="gone"
+                app:cardCornerRadius="2dp"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/empty_small_divider"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_small"
+                    android:showDividers="middle">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pinned_repos"
+                        android:textColor="@color/colorAccent"/>
+
+                    <com.github.devjn.githubsearch.views.StaticGridView
+                        android:id="@+id/grid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:horizontalSpacing="@dimen/spacing_small"
+                        android:numColumns="auto_fit"
+                        android:verticalSpacing="@dimen/spacing_micro"/>
 
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/large_text"/>
 
         </LinearLayout>
 

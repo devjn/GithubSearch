@@ -6,4 +6,6 @@
 
     <color name="white_semi">#99FFFFFF</color>
     <color name="star_pressed">#FFEE58</color>
+
+    <color name="material_default_light">#8B000000</color>
 </resources>
