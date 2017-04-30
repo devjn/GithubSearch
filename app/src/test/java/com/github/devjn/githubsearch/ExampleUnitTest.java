@@ -1,4 +1,4 @@
-package com.github.devjn.githubusers;
+package com.github.devjn.githubsearch;
 
 import org.junit.Test;
 

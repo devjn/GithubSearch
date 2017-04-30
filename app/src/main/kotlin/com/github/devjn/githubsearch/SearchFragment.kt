@@ -134,7 +134,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         mSearchView.setOnFocusChangeListener(object : FloatingSearchView.OnFocusChangeListener {
             override fun onFocus() {
                 //show history when search bar gains focus
-                mSearchView.swapSuggestions(suggestionAdapter.getSuggestions("", 3))
+                val list = suggestionAdapter.getSuggestions("", 3)
+                list?.let { mSearchView.swapSuggestions(list) }
             }
 
             override fun onFocusCleared() {

@@ -49,30 +49,35 @@
                         android:textColor="@color/colorAccent"/>
 
                     <TextView
+                        android:visibility="@{user.name != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.name}"
                         tools:text="name"/>
 
                     <TextView
+                        android:visibility="@{user.bio != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.bio}"
                         tools:text="bio"/>
 
                     <TextView
+                        android:visibility="@{user.company != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.company}"
                         tools:text="company"/>
 
                     <TextView
+                        android:visibility="@{user.location != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.location}"
                         tools:text="location"/>
 
                     <TextView
+                        android:visibility="@{user.email != null ? View.VISIBLE:View.GONE}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{user.email}"
