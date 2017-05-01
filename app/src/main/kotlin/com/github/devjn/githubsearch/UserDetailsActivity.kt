@@ -126,8 +126,11 @@ class UserDetailsActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
                     if (list.isNotEmpty()) binding.content.pinnedRoot.visibility = View.VISIBLE
+                    else binding.content.pinnedRoot.visibility = View.GONE
                     binding.content.grid.adapter = ReposAdapter(this@UserDetailsActivity, list)
+                    binding.content.pinnedProgress.visibility = View.GONE
                 }, { e ->
+                    binding.content.pinnedRoot.visibility = View.GONE
                     Log.e(TAG, "Error while getting data", e)
                 })
         return data
@@ -135,17 +138,15 @@ class UserDetailsActivity : AppCompatActivity() {
 
     inner class ReposAdapter(private val context: Context, private val products: List<PinnedRepo>) : BaseAdapter() {
 
-        override fun getCount(): Int {
-            return products.size
-        }
+        override fun getCount(): Int = products.size
 
-        override fun getItem(position: Int): Any {
-            return products[position]
-        }
+        override fun getItem(position: Int): Any = products[position]
 
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
+        override fun getItemId(position: Int): Long = position.toLong()
+
+        override fun areAllItemsEnabled(): Boolean =  false
+
+        override fun isEnabled(position: Int): Boolean = false
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view: PinnedCell
@@ -163,7 +164,6 @@ class UserDetailsActivity : AppCompatActivity() {
                 if (color != null)
                     view.nameTextView.setTextColor(color)
             }
-
             return view
         }
     }

@@ -22,6 +22,7 @@ import retrofit2.mock.BehaviorDelegate;
 import retrofit2.mock.MockRetrofit;
 import retrofit2.mock.NetworkBehavior;
 
+import static com.github.devjn.githubsearch.MockGithubService.getTestUser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -67,7 +68,7 @@ public class GithubApiMockAdapterTest {
         assertEquals(3, data.getTotal_count());
         List<User> users = data.getItems();
         assertNotNull(users);
-        User expectedUser = new User(17936372, "devjn", "https://api.github.com/users/devjn", "https://avatars2.githubusercontent.com/u/17936372?v=3");
+        User expectedUser = getTestUser();
         User receivedUser = users.get(0);
         assertEquals(expectedUser.getLogin(), receivedUser.getLogin());
         assertEquals(expectedUser.getUrl(), receivedUser.getUrl());
@@ -89,6 +90,5 @@ public class GithubApiMockAdapterTest {
         assertEquals("Finland", user.getLocation());
         assertEquals("Some company", user.getCompany());
     }
-
 
 }

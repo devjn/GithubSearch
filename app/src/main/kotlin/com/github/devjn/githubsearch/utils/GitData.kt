@@ -83,21 +83,24 @@ class User : GitObject, PaperParcelable {
 @PaperParcel
 class Repository : GitObject, PaperParcelable {
 
-    override val url: String;
-    val full_name: String;
-    val description: String;
-    val language: String;
+    override val url: String
+    val full_name: String
+    val description: String
+    val language: String
+    val html_url: String
 
     constructor() {
         this.full_name = ""
         this.url = ""
+        this.html_url = ""
         this.description = ""
         this.language = ""
     }
 
-    constructor(full_name: String, url: String, description: String, language: String) {
+    constructor(full_name: String, url: String, html_url: String, description: String, language: String) {
         this.full_name = full_name
         this.url = url
+        this.html_url = html_url
         this.description = description
         this.language = language
     }

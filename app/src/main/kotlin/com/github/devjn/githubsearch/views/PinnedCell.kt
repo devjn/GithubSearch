@@ -1,12 +1,12 @@
 package com.github.devjn.githubsearch.views
 
 import android.content.Context
-import android.support.v7.widget.CardView
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.utils.PinnedRepo
 import com.github.devjn.githubsearch.utils.Utils
 import com.github.devjn.githubsearch.utils.setLangImage
@@ -17,7 +17,7 @@ import com.github.devjn.githubsearch.utils.setLangImage
  * devjn@jn-arts.com
  * PinnedCell
  */
-class PinnedCell : CardView {
+class PinnedCell : FrameLayout {
 
     val nameTextView: TextView
     val descriptionTextView: TextView
@@ -25,7 +25,8 @@ class PinnedCell : CardView {
 
     constructor(context: Context) : super(context) {
         val pad = Utils.dp(8f)
-        setContentPadding(pad, pad, pad, pad)
+        setPadding(pad, pad, pad, pad)
+        setBackgroundResource(R.drawable.border)
 
         nameTextView = TextView(context)
         nameTextView.setLines(1)

@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
-import android.support.v4.view.ViewCompat.getTransitionName
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -142,6 +141,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE)
         rxDataSource = RxDataSource(mData)
         val dataSource = if (mType == TYPE_USERS)
             rxDataSource.bindRecyclerView<ListItemUserBinding>(mRecyclerView, R.layout.list_item_user)
@@ -156,17 +156,21 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             b.root.setOnClickListener { onClickSubject.onNext(b) }
         }
         onClickSubject.subscribe { bind ->
-            if (mType != TYPE_USERS) return@subscribe
-            val intent = Intent(context, UserDetailsActivity::class.java)
-            // Pass data object in the bundle and populate details activity.
-            val imageView = (bind as ListItemUserBinding).imageUser
-            intent.putExtra(EXTRA_DATA, bind.user)
-            intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, getTransitionName(imageView))
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                    imageView, ViewCompat.getTransitionName(imageView))
-            startActivity(intent, options.toBundle())
+            when (mType) {
+                TYPE_REPOSITORIES -> Utils.startCustomTab(activity, (bind as ListItemRepositoryBinding).repo.html_url)
+
+                TYPE_USERS -> {
+                    val intent = Intent(context, UserDetailsActivity::class.java)
+                    // Pass data object in the bundle and populate details activity.
+                    val imageView = (bind as ListItemUserBinding).imageUser
+                    intent.putExtra(EXTRA_DATA, bind.user)
+                    intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
+                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+                            imageView, ViewCompat.getTransitionName(imageView))
+                    startActivity(intent, options.toBundle())
+                }
+            }
         }
-        suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE)
     }
 
 

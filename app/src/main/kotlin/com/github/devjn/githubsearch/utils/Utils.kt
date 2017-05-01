@@ -1,8 +1,11 @@
 package com.github.devjn.githubsearch.utils
 
+import android.app.Activity
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Color
+import android.net.Uri
+import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.Log
@@ -36,7 +39,7 @@ fun setLangImage(textView: TextView, lang: String?) {
             drawable.setBounds(0, 0, Utils.dp(8f), Utils.dp(8f));
             textView.setCompoundDrawablesRelative(drawable, null, null, null)
         }
-    }
+    } ?: textView.setCompoundDrawables(null, null, null, null)
 }
 
 
@@ -86,22 +89,41 @@ object Utils {
                 .flatMapIterable({ entries -> entries })
                 .map({ v -> colors.put(v.key, Color.parseColor(v.value)); v })
                 .subscribeOn(Schedulers.computation())
-                .subscribe({ v -> // Log.i(TAG, "Color parsed, " + v)
+                .subscribe({ v ->
+                    // Log.i(TAG, "Color parsed, " + v)
                 }, { e ->
                     Log.e(TAG, "Error parsing color", e)
                 })
     }
 
-    fun <T: Any, R: Any> whenAllNotNull(vararg options: T?, block: (List<T>)->R) {
+    fun <T : Any, R : Any> whenAllNotNull(vararg options: T?, block: (List<T>) -> R) {
         if (options.all { it != null }) {
             block(options.filterNotNull())
         }
     }
 
-    fun <T: Any, R: Any> whenAnyNotNull(vararg options: T?, block: (List<T>)->R) {
+    fun <T : Any, R : Any> whenAnyNotNull(vararg options: T?, block: (List<T>) -> R) {
         if (options.any { it != null }) {
             block(options.filterNotNull())
         }
+    }
+
+    fun startCustomTab(activity: Activity, url: String) {
+
+        val uri = Uri.parse(url)
+
+        // create an intent builder
+        val intentBuilder = CustomTabsIntent.Builder()
+
+        // Customizing
+        intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary))
+        intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark))
+
+        // build custom tabs intent
+        val customTabsIntent = intentBuilder.build()
+
+        // launch the url
+        customTabsIntent.launchUrl(activity, uri)
     }
 
 }
