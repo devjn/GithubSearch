@@ -60,6 +60,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
     private lateinit var suggestions: SearchRecentSuggestions
     private var mLastGitData: GitData<T>? = null
     private var mLastQuery = ""
+    private var isSearchIntent = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +71,10 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         args?.let {
             if (it.containsKey(KEY_TYPE))
                 mType = args.getInt(KEY_TYPE)
+            if (args.containsKey(SearchManager.QUERY)) {
+                mLastQuery = args.getString(SearchManager.QUERY)
+                isSearchIntent = true
+            }
         }
     }
 
@@ -171,6 +177,10 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                 }
             }
         }
+        if(isSearchIntent) {
+            isSearchIntent = false
+            search(mLastQuery)
+        }
     }
 
 
@@ -190,6 +200,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                     rxDataSource.updateDataSet(mData).updateAdapter()
                     binding.progressBar.visibility = View.GONE
                     mLastGitData = gitData
+                    if (mData.isEmpty())
+                        binding.emptyText.text = getString(R.string.nothing_found)
                     checkEmptyView()
                 }, { e ->
                     Snackbar.make(binding.root, R.string.connection_problem, Snackbar.LENGTH_LONG)
@@ -237,9 +249,12 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         val EXTRA_DATA = "data"
         val EXTRA_IMAGE_TRANSITION_NAME = "transition_name"
 
-        fun newInstance(type: Int): Fragment {
+        fun newInstance(type: Int): Fragment = newInstance(type, null)
+
+        fun newInstance(type: Int, bundle: Bundle?): Fragment {
             val args: Bundle = Bundle()
             args.putInt(KEY_TYPE, type)
+            bundle?.let { args.putAll(it) }
             val fragment = if (type == TYPE_USERS) SearchFragment<User>() else SearchFragment<Repository>()
             fragment.arguments = args
             return fragment

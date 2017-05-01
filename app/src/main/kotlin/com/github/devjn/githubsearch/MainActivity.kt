@@ -1,5 +1,6 @@
 package com.github.devjn.githubsearch
 
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -32,8 +33,13 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_users -> {
+                var bundle: Bundle? = null
+                if (intent != null && intent.action == Intent.ACTION_SEARCH) {
+                    bundle = intent.extras
+                    intent = null
+                }
                 supportFragmentManager.beginTransaction().replace(
-                        R.id.container, SearchFragment.newInstance(SearchFragment.TYPE_USERS))
+                        R.id.container, SearchFragment.newInstance(SearchFragment.TYPE_USERS, bundle))
                         .commit();
                 return@OnNavigationItemSelectedListener true
             }

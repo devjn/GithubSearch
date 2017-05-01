@@ -119,18 +119,19 @@ class UserDetailsActivity : AppCompatActivity() {
                     binding.content.user = user
                     user?.let { mUser = it }
                 }, { e ->
+                    binding.content.user = data
                     Log.e(TAG, "Error while getting data", e)
                 })
 
         GithubService.pinnedService.getPinnedRepos(data.login).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
-                    if (list.isNotEmpty()) binding.content.pinnedRoot.visibility = View.VISIBLE
-                    else binding.content.pinnedRoot.visibility = View.GONE
+                    if (list.isNotEmpty()) binding.content.pinnedCard.visibility = View.VISIBLE
+                    else binding.content.pinnedCard.visibility = View.GONE
                     binding.content.grid.adapter = ReposAdapter(this@UserDetailsActivity, list)
                     binding.content.pinnedProgress.visibility = View.GONE
                 }, { e ->
-                    binding.content.pinnedRoot.visibility = View.GONE
+                    binding.content.pinnedCard.visibility = View.GONE
                     Log.e(TAG, "Error while getting data", e)
                 })
         return data
@@ -144,7 +145,7 @@ class UserDetailsActivity : AppCompatActivity() {
 
         override fun getItemId(position: Int): Long = position.toLong()
 
-        override fun areAllItemsEnabled(): Boolean =  false
+        override fun areAllItemsEnabled(): Boolean = false
 
         override fun isEnabled(position: Int): Boolean = false
 

@@ -27,6 +27,7 @@
             android:padding="@dimen/spacing_medium">
 
             <android.support.v7.widget.CardView
+                android:id="@+id/info_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_small"
@@ -94,7 +95,7 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:id="@+id/pinned_root"
+                android:id="@+id/pinned_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_small"
