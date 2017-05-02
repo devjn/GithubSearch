@@ -127,7 +127,7 @@
 
                 <ProgressBar
                     android:id="@+id/pinned_progress"
-                    android:padding="@dimen/spacing_large"
+                    android:padding="@dimen/spacing_xlarge"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

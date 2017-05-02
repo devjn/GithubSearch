@@ -10,6 +10,7 @@ import android.provider.SearchRecentSuggestions
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -143,6 +144,13 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             }
         })
 
+        mSearchView.setOnBindSuggestionCallback { view, leftIcon, _, _, _ ->
+            leftIcon.setImageDrawable(ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_history_black_24dp, null))
+            leftIcon.alpha = .36f;
+        }
+
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -177,7 +185,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                 }
             }
         }
-        if(isSearchIntent) {
+        if (isSearchIntent) {
             isSearchIntent = false
             search(mLastQuery)
         }
@@ -204,7 +212,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                         binding.emptyText.text = getString(R.string.nothing_found)
                     checkEmptyView()
                 }, { e ->
-                    Snackbar.make(binding.root, R.string.connection_problem, Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
                             .setAction(R.string.retry, { search(query) }).show()
                     binding.progressBar.visibility = View.GONE
                     Log.e(TAG, "Error while getting data", e)
@@ -215,13 +223,16 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         if (mLastGitData?.total_count == count) return
         val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(mLastQuery, page) as Observable<GitData<T>>
         else gitHubApi.getRepositories(mLastQuery, page) as Observable<GitData<T>>
+        binding.scrollProgress.visibility = View.VISIBLE
         api.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ gitData ->
                     gitData.items?.let { mData.addAll(it) }
                     rxDataSource.updateDataSet(mData).updateNotifyInsertedAdapter(count, mData.size)
+                    binding.scrollProgress.visibility = View.GONE
                 }, { e ->
-                    Snackbar.make(binding.root, R.string.connection_problem, Snackbar.LENGTH_LONG)
+                    binding.scrollProgress.visibility = View.GONE
+                    Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
                             .setAction(R.string.retry, { search(mLastQuery) }).show()
                     Log.e(TAG, "Error while getting data", e)
                 })
@@ -248,6 +259,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
         val EXTRA_DATA = "data"
         val EXTRA_IMAGE_TRANSITION_NAME = "transition_name"
+
+        val SNACKBAR_LENGTH = 6000
 
         fun newInstance(type: Int): Fragment = newInstance(type, null)
 

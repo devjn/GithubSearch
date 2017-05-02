@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
@@ -29,13 +30,13 @@ import java.util.*
 
 
 class UserDetailsActivity : AppCompatActivity() {
-    val TAG = UserDetailsActivity::class.java.simpleName
+    val TAG = UserDetailsActivity::class.simpleName
 
     private lateinit var binding: ActivityUserDetailsBinding
     private lateinit var mUser: User
     private var bookmark = false
     private var isBookmarked
-        get() = bookmark;
+        get() = bookmark
         set(bookmarked) {
             bookmark = bookmarked
             var drawable: Drawable
@@ -59,15 +60,17 @@ class UserDetailsActivity : AppCompatActivity() {
             if (isBookmarked) {
                 Log.i(TAG, "adding user to bookmarks: " + mUser)
                 DataProvider.insertUser(this, mUser)
+                Toast.makeText(this, getString(R.string.user_bookmarked, mUser.login), Toast.LENGTH_SHORT).show()
             } else {
                 Log.i(TAG, "removing user from bookmarks: " + mUser)
                 DataProvider.removeUser(this, mUser)
+                Toast.makeText(this, getString(R.string.user_unbookmarked, mUser.login), Toast.LENGTH_SHORT).show()
             }
         }
         val c = contentResolver.query(Uri.withAppendedPath(DataProvider.CONTENT_URI_BOOKMARKS, mUser.id.toString()),
                 arrayOf(DataProvider.BookmarkTags.USER_ID), null, null, null)
         if (c != null && c.moveToFirst()) c.use { c ->
-            val user_id = c.getLong(c.getColumnIndex(DataProvider.BookmarkTags.USER_ID));
+            val user_id = c.getLong(c.getColumnIndex(DataProvider.BookmarkTags.USER_ID))
             if (user_id == mUser.id) {
                 isBookmarked = true
             }
@@ -78,7 +81,7 @@ class UserDetailsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-        // Respond to the action bar's Up/Home button
+        // Back transition on the action bar's Up/Home button
             android.R.id.home -> {
                 supportFinishAfterTransition()
                 return true
@@ -88,6 +91,7 @@ class UserDetailsActivity : AppCompatActivity() {
     }
 
     fun setup(): User {
+        //Postpone transition until image is loaded
         supportPostponeEnterTransition()
 
         val extras = intent.extras
@@ -101,12 +105,12 @@ class UserDetailsActivity : AppCompatActivity() {
 
         Glide.with(this).load(data.avatar_url).asBitmap().listener(object : RequestListener<String, Bitmap> {
             override fun onResourceReady(resource: Bitmap?, model: String?, target: Target<Bitmap>?, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
-                supportStartPostponedEnterTransition();
+                supportStartPostponedEnterTransition()
                 return false
             }
 
             override fun onException(e: Exception?, model: String?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                supportStartPostponedEnterTransition();
+                supportStartPostponedEnterTransition()
                 Log.w(TAG, "image is not loaded: ", e)
                 return false
             }
@@ -120,6 +124,7 @@ class UserDetailsActivity : AppCompatActivity() {
                     user?.let { mUser = it }
                 }, { e ->
                     binding.content.user = data
+                    toastNetError()
                     Log.e(TAG, "Error while getting data", e)
                 })
 
@@ -132,9 +137,14 @@ class UserDetailsActivity : AppCompatActivity() {
                     binding.content.pinnedProgress.visibility = View.GONE
                 }, { e ->
                     binding.content.pinnedCard.visibility = View.GONE
+                    toastNetError()
                     Log.e(TAG, "Error while getting data", e)
                 })
         return data
+    }
+
+    private fun toastNetError() {
+        Toast.makeText(this, R.string.net_problem, Toast.LENGTH_SHORT).show()
     }
 
     inner class ReposAdapter(private val context: Context, private val products: List<PinnedRepo>) : BaseAdapter() {

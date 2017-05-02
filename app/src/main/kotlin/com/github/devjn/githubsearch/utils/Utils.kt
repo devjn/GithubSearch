@@ -36,8 +36,9 @@ fun setLangImage(textView: TextView, lang: String?) {
             var drawable = ContextCompat.getDrawable(textView.context, R.drawable.round_point)
             drawable = DrawableCompat.wrap(drawable)
             DrawableCompat.setTint(drawable, color)
-            drawable.setBounds(0, 0, Utils.dp(8f), Utils.dp(8f));
+            drawable.setBounds(0, 0, Utils.dp(8f), Utils.dp(8f))
             textView.setCompoundDrawablesRelative(drawable, null, null, null)
+            textView.compoundDrawablePadding = Utils.dp(2f)
         }
     } ?: textView.setCompoundDrawables(null, null, null, null)
 }

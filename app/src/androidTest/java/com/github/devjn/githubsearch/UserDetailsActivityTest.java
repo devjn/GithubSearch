@@ -48,11 +48,18 @@ public class UserDetailsActivityTest {
     private MockWebServer server;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup() throws Exception {
         server = new MockWebServer();
         server.start();
         GithubService.changeApiBaseUrl(server.url("/").toString());
         GithubService.changeApiPinnedBaseUrl(server.url("/").toString());
+
+//        RxAndroidPlugins.setMainThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
+//            @Override
+//            public Scheduler apply(@NonNull Scheduler scheduler) throws Exception {
+//                return Schedulers.trampoline();
+//            }
+//        });
     }
 
     @Test
@@ -104,6 +111,7 @@ public class UserDetailsActivityTest {
 
     @After
     public void tearDown() throws Exception {
+//        RxAndroidPlugins.reset();
         server.shutdown();
     }
 
@@ -116,7 +124,7 @@ public class UserDetailsActivityTest {
              */
             @Override
             public boolean matchesSafely(View view) {
-                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup)view).getChildCount());
+                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup) view).getChildCount());
             }
 
             /**

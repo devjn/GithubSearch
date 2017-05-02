@@ -1,23 +1,33 @@
 <resources>
     <string name="app_name">Github Search</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_user_details">UserDetailsActivity</string>
+    <string name="title_activity_main">Search</string>
+    <string name="title_activity_user_details">User Details</string>
     <string name="suggestion_authority">com.github.devjn.githubsearch.utils.SuggestionProvider</string>
 
+    <!--    Bottom navigation   -->
     <string name="title_home">Home</string>
     <string name="title_users">Users</string>
     <string name="title_bookmarks">Bookmarks</string>
     <string name="title_repos">Repositories</string>
 
+
+    <!--    Views   -->
+
     <string name="find_users">Look up for users on Github</string>
     <string name="find_repos">Look up for repositories on Github</string>
     <string name="retry">Retry</string>
     <string name="search_hint">Search…</string>
-    <string name="connection_problem">Sorry, connection error</string>
     <string name="profile_info">Info</string>
     <string name="pinned_repos">Pinned repositories</string>
     <string name="empty_info">No info</string>
-    <string name="empty_bookmarks">No bookmarks yet, go around to find the one you like</string>
+    <string name="empty_bookmarks">No bookmarks yet, start searching and add the ones you like</string>
     <string name="nothing_found">Nothing found</string>
+
+    <!--    Toasts  -->
+    <string name="connection_problem">Sorry, connection error</string>
+    <string name="net_problem">Cannot load. Connection problems</string>
+    <string name="user_bookmarked">%1$s is added to bookmarks</string>
+    <string name="user_unbookmarked">%1$s is removed from bookmarks</string>
+
 </resources>
