@@ -121,7 +121,6 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
                 mLastQuery = searchSuggestion.body
                 search(mLastQuery)
-                Log.d(TAG, "onSuggestionClicked()")
             }
 
             override fun onSearchAction(query: String) {

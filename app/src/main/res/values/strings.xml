@@ -21,7 +21,7 @@
     <string name="profile_info">Info</string>
     <string name="pinned_repos">Pinned repositories</string>
     <string name="empty_info">No info</string>
-    <string name="empty_bookmarks">No bookmarks yet, start searching and add the ones you like</string>
+    <string name="empty_bookmarks">No bookmarks yet\nStart searching and add the ones you like</string>
     <string name="nothing_found">Nothing found</string>
 
     <!--    Toasts  -->
