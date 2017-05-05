@@ -30,6 +30,7 @@ import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
@@ -59,6 +60,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
     private lateinit var scrollListener: EndlessRecyclerViewScrollListener
     private lateinit var suggestionAdapter: SuggestionAdapter
     private lateinit var suggestions: SearchRecentSuggestions
+
+    private var mDisposables: CompositeDisposable = CompositeDisposable()
     private var mLastGitData: GitData<T>? = null
     private var mLastQuery = ""
     private var isSearchIntent = false
@@ -94,11 +97,30 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
         mRecyclerView.addOnScrollListener(scrollListener)
         binding.emptyText.text = getString(if (mType == TYPE_USERS) R.string.find_users else R.string.find_repos)
-        mSearchView = binding.floatingSearchView
+        mSearchView = inflater.inflate(R.layout.search_view, binding.root as ViewGroup, false) as FloatingSearchView   //binding.floatingSearchView
+        (binding.root as ViewGroup).addView(mSearchView)
         setupSearchView()
         checkEmptyView()
         return binding.root
     }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        // Temp fix to overcome SearchView disappearing bug
+        if (savedInstanceState != null) {
+            (binding.root as ViewGroup).removeView(mSearchView)
+            super.onViewStateRestored(savedInstanceState)
+            mSearchView = activity.layoutInflater.inflate(R.layout.search_view, binding.root as ViewGroup, false) as FloatingSearchView
+            (binding.root as ViewGroup).addView(mSearchView)
+            mSearchView.setSearchText(mLastQuery)
+            setupSearchView()
+        } else super.onViewStateRestored(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        mDisposables.dispose()
+        super.onDestroy()
+    }
+
 
     private fun setupSearchView() {
         val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -106,14 +128,19 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
         mSearchView.setOnQueryChangeListener { oldQuery, newQuery ->
             if (oldQuery != "" && newQuery == "") {
-                mSearchView.clearSuggestions()
+                val list = suggestionAdapter.getSuggestions("", 3)
+                list?.let { mSearchView.swapSuggestions(list) }
             } else {
                 //this shows the top left circular progress
                 mSearchView.showProgress()
-                val list = suggestionAdapter.getSuggestions(newQuery, 5)
-                //this will swap the data and render the collapse/expand animations as necessary
-                list?.let { mSearchView.swapSuggestions(list) } ?: mSearchView.clearSuggestions()
-                mSearchView.hideProgress()
+                mDisposables.add(Observable.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ list ->
+                            //this will swap the data and render the collapse/expand animations as necessary
+                            mSearchView.swapSuggestions(list)
+                            mSearchView.hideProgress()
+                        }, { mSearchView.clearSuggestions(); mSearchView.hideProgress() }));
             }
         }
 
@@ -148,7 +175,6 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                     R.drawable.ic_history_black_24dp, null))
             leftIcon.alpha = .36f;
         }
-
 
     }
 
@@ -190,7 +216,6 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
     }
 
-
     private fun search(query: String) {
         // reset infinite scroll
         scrollListener.resetState()
@@ -199,7 +224,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
         val api: Observable<GitData<T>> =
                 (if (mType == TYPE_USERS) gitHubApi.getUsers(query) else gitHubApi.getRepositories(query)) as Observable<GitData<T>>
-        api.subscribeOn(Schedulers.io())
+        mDisposables.add(api.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ gitData ->
                     mData.clear()
@@ -215,7 +240,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                             .setAction(R.string.retry, { search(query) }).show()
                     binding.progressBar.visibility = View.GONE
                     Log.e(TAG, "Error while getting data", e)
-                })
+                }));
     }
 
     private fun loadMore(page: Int, count: Int) {
@@ -223,7 +248,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(mLastQuery, page) as Observable<GitData<T>>
         else gitHubApi.getRepositories(mLastQuery, page) as Observable<GitData<T>>
         binding.scrollProgress.visibility = View.VISIBLE
-        api.subscribeOn(Schedulers.io())
+        mDisposables.add(api.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ gitData ->
                     gitData.items?.let { mData.addAll(it) }
@@ -234,7 +259,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                     Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
                             .setAction(R.string.retry, { search(mLastQuery) }).show()
                     Log.e(TAG, "Error while getting data", e)
-                })
+                }));
     }
 
     private fun checkEmptyView() {
