@@ -19,11 +19,10 @@
 
         <ImageView
             android:id="@+id/imageUser"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/image_size_list"
+            android:layout_height="@dimen/image_size_list"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:scaleType="centerCrop"
+            android:scaleType="center"
             android:transitionName="@{user.login}"
             app:imageUrl="@{user.avatar_url}"
             tools:ignore="UnusedAttribute"
@@ -34,6 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="@dimen/spacing_medium"
             android:layout_weight="1"
             android:text="@{user.login}"
             tools:text="Some Username"/>

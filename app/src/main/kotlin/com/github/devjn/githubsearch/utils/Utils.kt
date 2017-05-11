@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.github.devjn.githubsearch.App
 import com.github.devjn.githubsearch.R
 import com.google.gson.Gson
@@ -25,7 +26,8 @@ import java.nio.charset.Charset
 
 @BindingAdapter("bind:imageUrl")
 fun loadImage(imageView: ImageView, url: String?) {
-    Glide.with(imageView.context).load(url).into(imageView)
+    Glide.with(imageView.context).load(url).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+            .into(imageView)
 }
 
 @BindingAdapter("bind:drawableLang")
@@ -51,7 +53,7 @@ fun setLangImage(textView: TextView, lang: String?) {
  */
 object Utils {
 
-    val TAG = Utils::class.java.simpleName
+    val TAG = Utils::class.simpleName
 
     var density = 1f
 
@@ -68,7 +70,7 @@ object Utils {
     }
 
     fun loadColors() {
-        var json: String? = null
+        val json: String?
         try {
             val ins = App.applicationContext.resources.openRawResource(R.raw.colors)
             val size = ins.available()

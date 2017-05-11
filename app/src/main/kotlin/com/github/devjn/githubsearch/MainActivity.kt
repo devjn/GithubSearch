@@ -4,10 +4,15 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.github.devjn.githubsearch.databinding.ActivityMainBinding
+
+
+
+
 
 
 class MainActivity : BaseActivity() {
@@ -70,5 +75,11 @@ class MainActivity : BaseActivity() {
     }
 
     override fun getRoot(): View = binding.coordinator
+
+    companion object {
+        init {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        }
+    }
 
 }

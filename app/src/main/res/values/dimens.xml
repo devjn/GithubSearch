@@ -13,5 +13,6 @@
     <dimen name="spacing_medium">16dp</dimen>
     <dimen name="spacing_large">24dp</dimen>
     <dimen name="spacing_xlarge">32dp</dimen>
+    <dimen name="image_size_list">48dp</dimen>
 
 </resources>

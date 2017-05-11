@@ -77,7 +77,7 @@ dependencies {
 
     compile 'com.github.devjn:RxRecyclerAdapter:2.0.2'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.arimorty:floatingsearchview:2.0.4'
+    compile 'com.github.arimorty:floatingsearchview:2.0.3'
 }
 repositories {
     mavenCentral()

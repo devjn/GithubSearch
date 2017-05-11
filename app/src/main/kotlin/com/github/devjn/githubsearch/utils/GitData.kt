@@ -46,10 +46,13 @@ class User : GitObject, PaperParcelable {
 
     // Optional
     var name: String? = null
-    var email: String? = null
     var bio: String? = null
+    var email: String? = null
     var company: String? = null
     var location: String? = null
+    var blog: String? = null
+
+    var isDetailed = false
 
     constructor() {
         this.id = 0
@@ -66,6 +69,7 @@ class User : GitObject, PaperParcelable {
     }
 
     fun hasExtra(): Boolean {
+        if (!isDetailed) return false
         var has = false
         Utils.whenAnyNotNull(name, email, bio, company, location) {
             has = true

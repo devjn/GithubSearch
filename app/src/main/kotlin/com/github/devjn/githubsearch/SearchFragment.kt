@@ -104,7 +104,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         return binding.root
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+/*    override fun onViewStateRestored(savedInstanceState: Bundle?) {
         // Temp fix to overcome SearchView disappearing bug
         if (savedInstanceState != null) {
             (binding.root as ViewGroup).removeView(mSearchView)
@@ -114,7 +114,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             mSearchView.setSearchText(mLastQuery)
             setupSearchView()
         } else super.onViewStateRestored(savedInstanceState)
-    }
+    }*/
 
     override fun onDestroy() {
         mDisposables.dispose()
@@ -203,7 +203,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                     // Pass data object in the bundle and populate details activity.
                     val imageView = (bind as ListItemUserBinding).imageUser
                     intent.putExtra(EXTRA_DATA, bind.user)
-                    intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
+                    if (imageView.drawable != null) intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
                     val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
                             imageView, ViewCompat.getTransitionName(imageView))
                     startActivity(intent, options.toBundle())

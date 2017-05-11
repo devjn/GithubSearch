@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.github.devjn.githubsearch.databinding.ActivityUserDetailsBinding
@@ -91,19 +92,21 @@ class UserDetailsActivity : AppCompatActivity() {
     }
 
     fun setup(): User {
-        //Postpone transition until image is loaded
-        supportPostponeEnterTransition()
-
         val extras = intent.extras
+        if(extras.containsKey(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME)) {
+            //Postpone transition until image is loaded
+            supportPostponeEnterTransition()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val imageTransitionName = extras.getString(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME)
+                binding.imageProfile.transitionName = imageTransitionName
+            }
+        }
+
         val data: User = extras.getParcelable(SearchFragment.EXTRA_DATA)
         this.binding.user = data
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val imageTransitionName = extras.getString(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME)
-            binding.imageProfile.transitionName = imageTransitionName
-        }
 
-        Glide.with(this).load(data.avatar_url).asBitmap().listener(object : RequestListener<String, Bitmap> {
+        Glide.with(this).load(data.avatar_url).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE).dontAnimate().dontTransform().listener(object : RequestListener<String, Bitmap> {
             override fun onResourceReady(resource: Bitmap?, model: String?, target: Target<Bitmap>?, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
                 supportStartPostponedEnterTransition()
                 return false
@@ -120,9 +123,11 @@ class UserDetailsActivity : AppCompatActivity() {
         gitHubApi.getUser(data.login).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ user ->
+                    user.isDetailed = true
                     binding.content.user = user
                     user?.let { mUser = it }
                 }, { e ->
+                    data.isDetailed = true
                     binding.content.user = data
                     toastNetError()
                     Log.e(TAG, "Error while getting data", e)
