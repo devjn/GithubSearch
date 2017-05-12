@@ -92,7 +92,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         mRecyclerView.addItemDecoration(mDividerItemDecoration)
         scrollListener = object : EndlessRecyclerViewScrollListener(mLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadMore(page, totalItemsCount)
+                loadMore(page + 1, totalItemsCount)
             }
         }
         mRecyclerView.addOnScrollListener(scrollListener)
