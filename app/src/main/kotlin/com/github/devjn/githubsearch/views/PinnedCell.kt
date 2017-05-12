@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.utils.PinnedRepo
-import com.github.devjn.githubsearch.utils.Utils
+import com.github.devjn.githubsearch.utils.AndroidUtils
 import com.github.devjn.githubsearch.utils.setLangImage
 
 
@@ -24,7 +24,7 @@ class PinnedCell : FrameLayout {
     val langTextView: TextView
 
     constructor(context: Context) : super(context) {
-        val pad = Utils.dp(8f)
+        val pad = AndroidUtils.dp(8f)
         setPadding(pad, pad, pad, pad)
         setBackgroundResource(R.drawable.border)
 
@@ -45,7 +45,7 @@ class PinnedCell : FrameLayout {
         layoutParams = descriptionTextView.layoutParams as FrameLayout.LayoutParams
         layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
         layoutParams.height = FrameLayout.LayoutParams.WRAP_CONTENT
-        layoutParams.topMargin = Utils.dp(24f)
+        layoutParams.topMargin = AndroidUtils.dp(24f)
         descriptionTextView.layoutParams = layoutParams
 
         langTextView = TextView(context)
@@ -61,7 +61,7 @@ class PinnedCell : FrameLayout {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(Utils.dp(120f), View.MeasureSpec.EXACTLY))
+        super.onMeasure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(AndroidUtils.dp(120f), View.MeasureSpec.EXACTLY))
     }
 
     fun setData(repo: PinnedRepo) {

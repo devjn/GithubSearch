@@ -33,14 +33,14 @@ fun loadImage(imageView: ImageView, url: String?) {
 @BindingAdapter("bind:drawableLang")
 fun setLangImage(textView: TextView, lang: String?) {
     lang?.let {
-        val color: Int? = Utils.colors[it]
+        val color: Int? = AndroidUtils.colors[it]
         if (color != null) {
             var drawable = ContextCompat.getDrawable(textView.context, R.drawable.round_point)
             drawable = DrawableCompat.wrap(drawable)
             DrawableCompat.setTint(drawable, color)
-            drawable.setBounds(0, 0, Utils.dp(8f), Utils.dp(8f))
+            drawable.setBounds(0, 0, AndroidUtils.dp(8f), AndroidUtils.dp(8f))
             textView.setCompoundDrawablesRelative(drawable, null, null, null)
-            textView.compoundDrawablePadding = Utils.dp(2f)
+            textView.compoundDrawablePadding = AndroidUtils.dp(2f)
         }
     } ?: textView.setCompoundDrawables(null, null, null, null)
 }
@@ -51,9 +51,9 @@ fun setLangImage(textView: TextView, lang: String?) {
  * devjn@jn-arts.com
  * Utils
  */
-object Utils {
+object AndroidUtils {
 
-    val TAG = Utils::class.simpleName
+    val TAG = AndroidUtils::class.simpleName
 
     var density = 1f
 

@@ -19,10 +19,14 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.devjn.githubsearch.databinding.FragmentBookmarksBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
-import com.github.devjn.githubsearch.utils.DataProvider
+import com.github.devjn.githubsearch.db.AndroidCursor
+import com.github.devjn.githubsearch.db.DataProvider
+import com.github.devjn.githubsearch.model.db.DataSource
+import com.github.devjn.githubsearch.model.entities.UserEntity
 import com.github.devjn.githubsearch.utils.User
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.subjects.PublishSubject
+import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 
 /**
@@ -105,27 +109,16 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         val loader = CursorLoader(activity,
                 DataProvider.CONTENT_URI_BOOKMARKS,
                 null, null, null,
-                DataProvider.BookmarkTags.LOGIN_NAME + " ASC");
+                UserEntity.Tags.LOGIN.fieldName + " ASC");
         return loader;
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         mData.clear()
-        if (data != null && data.moveToFirst())
-            do {
-                mData.add(getUserFromCursor(data))
-            } while (data.moveToNext())
+        mData.addAll(DataSource.usersFromCursor(AndroidCursor(data)))
         rxDataSource.updateDataSet(mData).updateAdapter()
         binding.progressBar.visibility = View.GONE
         checkEmptyView()
-    }
-
-    fun getUserFromCursor(c: Cursor): User {
-        val id = c.getLong(c.getColumnIndex(DataProvider.BookmarkTags.USER_ID))
-        val login = c.getString(c.getColumnIndex(DataProvider.BookmarkTags.LOGIN_NAME))
-        val url = c.getString(c.getColumnIndex(DataProvider.BookmarkTags.URL))
-        val avatar = c.getString(c.getColumnIndex(DataProvider.BookmarkTags.AVATAR_URL))
-        return User(id, login, url, avatar)
     }
 
 

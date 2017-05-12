@@ -92,7 +92,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         mRecyclerView.addItemDecoration(mDividerItemDecoration)
         scrollListener = object : EndlessRecyclerViewScrollListener(mLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadMore(page, totalItemsCount)
+                loadMore(page + 1, totalItemsCount)
             }
         }
         mRecyclerView.addOnScrollListener(scrollListener)
@@ -196,7 +196,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
         onClickSubject.subscribe { bind ->
             when (mType) {
-                TYPE_REPOSITORIES -> Utils.startCustomTab(activity, (bind as ListItemRepositoryBinding).repo.html_url)
+                TYPE_REPOSITORIES -> AndroidUtils.startCustomTab(activity, (bind as ListItemRepositoryBinding).repo.html_url)
 
                 TYPE_USERS -> {
                     val intent = Intent(context, UserDetailsActivity::class.java)

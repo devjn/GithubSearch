@@ -1,7 +1,6 @@
 package com.github.devjn.githubsearch.utils
 
-import paperparcel.PaperParcel
-import paperparcel.PaperParcelable
+import java.io.Serializable
 
 
 /**
@@ -36,8 +35,7 @@ interface GitObject {
     val url: String;
 }
 
-@PaperParcel
-class User : GitObject, PaperParcelable {
+class User : GitObject, Serializable {
 
     override val url: String;
     val login: String;
@@ -77,15 +75,10 @@ class User : GitObject, PaperParcelable {
         return has
     }
 
-
-    companion object {
-        @JvmField val CREATOR = PaperParcelUser.CREATOR
-    }
-
 }
 
-@PaperParcel
-class Repository : GitObject, PaperParcelable {
+
+class Repository : GitObject, Serializable {
 
     override val url: String
     val full_name: String
@@ -107,10 +100,6 @@ class Repository : GitObject, PaperParcelable {
         this.html_url = html_url
         this.description = description
         this.language = language
-    }
-
-    companion object {
-        @JvmField val CREATOR = PaperParcelRepository.CREATOR
     }
 
 }

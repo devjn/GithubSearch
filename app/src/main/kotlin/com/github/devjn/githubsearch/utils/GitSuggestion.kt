@@ -44,7 +44,7 @@ class GitSuggestion : SearchSuggestion {
     }
 
     companion object {
-        @JvmField val CREATOR = PaperParcelRepository.CREATOR
+        @JvmField val CREATOR = "GitSuggestion"
     }
 
 }

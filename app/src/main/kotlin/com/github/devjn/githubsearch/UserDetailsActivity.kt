@@ -22,6 +22,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.github.devjn.githubsearch.databinding.ActivityUserDetailsBinding
+import com.github.devjn.githubsearch.db.DataProvider
+import com.github.devjn.githubsearch.model.entities.UserEntity
 import com.github.devjn.githubsearch.utils.*
 import com.github.devjn.githubsearch.views.PinnedCell
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,9 +71,9 @@ class UserDetailsActivity : AppCompatActivity() {
             }
         }
         val c = contentResolver.query(Uri.withAppendedPath(DataProvider.CONTENT_URI_BOOKMARKS, mUser.id.toString()),
-                arrayOf(DataProvider.BookmarkTags.USER_ID), null, null, null)
+                arrayOf(UserEntity.Tags.ID.fieldName), null, null, null)
         if (c != null && c.moveToFirst()) c.use { c ->
-            val user_id = c.getLong(c.getColumnIndex(DataProvider.BookmarkTags.USER_ID))
+            val user_id = c.getLong(c.getColumnIndex(UserEntity.Tags.ID.fieldName))
             if (user_id == mUser.id) {
                 isBookmarked = true
             }
@@ -102,7 +104,7 @@ class UserDetailsActivity : AppCompatActivity() {
             }
         }
 
-        val data: User = extras.getParcelable(SearchFragment.EXTRA_DATA)
+        val data: User = extras.getSerializable(SearchFragment.EXTRA_DATA) as User
         this.binding.user = data
 
 
@@ -176,7 +178,7 @@ class UserDetailsActivity : AppCompatActivity() {
             view.id = position
             val lang = products[position].language
             lang?.let {
-                val color: Int? = Utils.colors[it]
+                val color: Int? = AndroidUtils.colors[it]
                 if (color != null)
                     view.nameTextView.setTextColor(color)
             }

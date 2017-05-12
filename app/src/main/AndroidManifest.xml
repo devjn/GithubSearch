@@ -20,7 +20,7 @@
             android:exported="true"/>
 
         <provider
-            android:name=".utils.DataProvider"
+            android:name=".db.DataProvider"
             android:authorities="${applicationId}.utils.DataProvider"
             android:exported="false"/>
 
