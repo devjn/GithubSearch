@@ -1,0 +1,3 @@
+# GitHub linguist
+ios/xcode/Pods/* linguist-vendored
+ios/src/main/java/org/moe/* linguist-vendored
