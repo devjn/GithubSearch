@@ -1,0 +1,1 @@
+{"output":"src/main/java","platform":"iOS","bindings":[{"type":"header","name":"SDWebImage","objcClassGenerationMode":"Hybrid","headerPath":"xcode/Pods/SDWebImage","headerSearchPaths":[],"userHeaderSearchPaths":[],"frameworkSearchPaths":[],"packageBase":"org.moe.bindings","importCode":"#import <SDWebImage/UIImageView+WebCache.h>"}]}

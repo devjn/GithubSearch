@@ -4,7 +4,7 @@ interface ISQLiteDatabase {
 
     fun newContentValues(): ISQLiteContentValues
 
-    fun query(table: String?, columns: Array<String?>, selection: String?,
+    fun query(table: String?, columns: Array<String?>?, selection: String?,
               selectionArgs: Array<String>?, groupBy: String?, having: String?,
               orderBy: String?): ISQLiteCursor?
 
@@ -14,7 +14,7 @@ interface ISQLiteDatabase {
 
     fun execSQL(statement: String)
 
-    fun update(tableName: String, values: ISQLiteContentValues,
+    fun update(tableName: String, values: ISQLiteContentValues?,
                whereClause: String, whereArgs: Array<String>?) : Int
 
     fun rawQuery(sql: String, selectionArgs: Array<String>?): ISQLiteCursor?

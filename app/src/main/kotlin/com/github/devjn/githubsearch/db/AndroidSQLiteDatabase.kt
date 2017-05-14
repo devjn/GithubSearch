@@ -20,7 +20,7 @@ class AndroidSQLiteDatabase(private val db: SQLiteDatabase?) : ISQLiteDatabase {
         return AndroidContentValues()
     }
 
-    override fun query(table: String?, columns: Array<String?>, selection: String?,
+    override fun query(table: String?, columns: Array<String?>?, selection: String?,
                        selectionArgs: Array<String>?, groupBy: String?, having: String?,
                        orderBy: String?): ISQLiteCursor? {
         val cursor = db!!.query(table, columns, selection, selectionArgs, groupBy, having, orderBy) ?: return null
@@ -40,7 +40,7 @@ class AndroidSQLiteDatabase(private val db: SQLiteDatabase?) : ISQLiteDatabase {
         return (initialValues as AndroidContentValues).contentValues
     }
 
-    override fun update(tableName: String, values: ISQLiteContentValues, whereClause: String, whereArgs: Array<String>?): Int {
+    override fun update(tableName: String, values: ISQLiteContentValues?, whereClause: String, whereArgs: Array<String>?): Int {
         if (values == null || values.size() == 0) {
             throw IllegalArgumentException("Empty values")
         }
