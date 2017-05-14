@@ -40,11 +40,10 @@ protected constructor(peer: Pointer) : BaseSearchController<Repository>(peer, Ba
     override fun viewDidLoad() {
         super.viewDidLoad()
         initViews(this)
-        println("--- viewDidLoad");
     }
 
     override fun updateSearchResultsForSearchController(searchController: UISearchController?) {
-        println("--- updateSearchResultsForSearchController");
+        //TODO: implement search suggestions
     }
 
     override fun searchBarSearchButtonClicked(searchBar: UISearchBar) {

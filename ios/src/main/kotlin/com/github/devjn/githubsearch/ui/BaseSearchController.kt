@@ -42,8 +42,8 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
     val mType: Int
     val CELL_IDENTIFIER: String
 
-    protected var mData: ArrayList<T> = ArrayList()
-    val gitHubApi = GithubService.createService(GitHubApi::class.java)
+    protected val mData: ArrayList<T> = ArrayList()
+    protected val gitHubApi = GithubService.createService(GitHubApi::class.java)
 
     protected var mDisposables: CompositeDisposable = CompositeDisposable()
     protected var mLastGitData: GitData<T>? = null

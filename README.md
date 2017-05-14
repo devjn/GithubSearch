@@ -1,6 +1,6 @@
 # GithubSearch
 
-Hybrid Android and iOS app for searching users and repos at Github
+Android and iOS app for searching users and repos at Github
 
 Android             |  iOS
 :-------------------------:|:-------------------------:

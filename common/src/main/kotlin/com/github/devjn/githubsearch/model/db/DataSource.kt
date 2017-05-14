@@ -33,7 +33,7 @@ class DataSource(private val dbHelper: ISQLiteDatabaseHelper) {
         UserEntity.deleteFromDB(db, id)
     }
 
-    fun getUserById(id: Int): User? {
+    fun getUserById(id: Long): User? {
         val cursor = UserEntity.selectFromDB(db, UserEntity.Tags.ID.fieldName + " = " + id) ?: return null
 
         cursor.moveToFirst()

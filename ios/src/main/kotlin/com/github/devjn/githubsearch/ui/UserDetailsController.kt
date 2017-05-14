@@ -1,12 +1,13 @@
 package com.github.devjn.githubsearch.ui
 
 
+import android.util.Log
 import apple.foundation.NSBundle
 import apple.foundation.NSCoder
 import apple.foundation.NSURL
 import apple.uikit.*
-import apple.uikit.enums.UIBarButtonSystemItem
-import com.github.devjn.githubsearch.db.SQLiteDatabaseHelper
+import apple.uikit.enums.UIBarButtonItemStyle
+import com.github.devjn.githubsearch.Main
 import com.github.devjn.githubsearch.model.db.DataSource
 import com.github.devjn.githubsearch.utils.User
 import org.moe.bindings.category.UIImageViewExt
@@ -16,6 +17,7 @@ import org.moe.natj.general.ann.Owned
 import org.moe.natj.general.ann.RegisterOnStartup
 import org.moe.natj.general.ann.Runtime
 import org.moe.natj.objc.ObjCRuntime
+import org.moe.natj.objc.SEL
 import org.moe.natj.objc.ann.IBOutlet
 import org.moe.natj.objc.ann.ObjCClassName
 import org.moe.natj.objc.ann.Property
@@ -58,24 +60,55 @@ protected constructor(peer: Pointer) : UIViewController(peer) {
     @IBOutlet
     external fun textLogin(): UITextView
 
+    val TAG = UserDetailsController::class.simpleName
+
+    private var source: DataSource = Main.dataSource
+    private var isBookmarked = false
+
     var user: User? = null
 
     override fun viewDidLoad() {
         super.viewDidLoad()
-        print("user viewDidLoad")
+        println("user viewDidLoad")
         user?.let {
             textLogin().setText(it.login)
             val url = NSURL.URLWithString(it.avatar_url)
             UIImageViewExt.sd_setImageWithURLPlaceholderImage(this.imageView(), url, UIImage.imageNamed("User"))
         } ?: print("user is null")
-        val button = UIBarButtonItem.alloc().initWithBarButtonSystemItemTargetAction (UIBarButtonSystemItem.Bookmarks, this, null)
+//        source = DataSource(SQLiteDatabaseHelper())
+//        source.open()
+        if (source.getUserById(user!!.id) != null)
+            isBookmarked = true
+        val image = UIImage.imageNamed(if (isBookmarked) "Bookmark" else "NonBookmark")
+        val button = UIBarButtonItem.alloc().initWithImageStyleTargetAction(image, UIBarButtonItemStyle.Plain, this, SEL("bookmark:"))
         navigationItem().setRightBarButtonItem(button)
     }
 
+//    override fun viewWillDisappear(animated: Boolean) {
+//        super.viewWillDisappear(animated)
+//        source.close()
+//    }
+
     fun addToBookmarks() {
-        val source = DataSource(SQLiteDatabaseHelper())
-        source.open()
         source.createUser(user!!)
+        isBookmarked = true
+        navigationItem().rightBarButtonItem().setImage(UIImage.imageNamed("Bookmark"))
+        Log.i(TAG, "adding user to bookmarks: " + user)
+    }
+
+    fun removeFromBookmarks() {
+        source.deleteUser(user!!.id.toInt())
+        isBookmarked = false
+        navigationItem().rightBarButtonItem().setImage(UIImage.imageNamed("NonBookmark"))
+        Log.i(TAG, "removing user from bookmarks: " + user)
+    }
+
+    @Selector("bookmark:")
+    fun bookmark() {
+        println("user bookmark")
+        if (!isBookmarked)
+            addToBookmarks()
+        else removeFromBookmarks()
     }
 
 

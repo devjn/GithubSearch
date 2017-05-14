@@ -6,6 +6,8 @@ import apple.uikit.UIApplication
 import apple.uikit.UIWindow
 import apple.uikit.c.UIKit
 import apple.uikit.protocol.UIApplicationDelegate
+import com.github.devjn.githubsearch.db.SQLiteDatabaseHelper
+import com.github.devjn.githubsearch.model.db.DataSource
 
 import org.moe.natj.general.Pointer
 import org.moe.natj.general.ann.RegisterOnStartup
@@ -29,6 +31,12 @@ class Main protected constructor(peer: Pointer) : NSObject(peer), UIApplicationD
     }
 
     companion object {
+
+        val dataSource = DataSource(SQLiteDatabaseHelper())
+
+        init {
+            dataSource.open()
+        }
 
         @JvmStatic fun main(args: Array<String>) {
             UIKit.UIApplicationMain(0, null, null, Main::class.java.getName())

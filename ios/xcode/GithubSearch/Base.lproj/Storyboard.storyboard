@@ -89,7 +89,7 @@
                                 </tableViewCellContentView>
                                 <edgeInsets key="layoutMargins" top="8" left="0.0" bottom="8" right="8"/>
                                 <connections>
-                                    <segue destination="1ab-Lp-JFd" kind="show" id="Uie-i8-uhT"/>
+                                    <segue destination="1ab-Lp-JFd" kind="show" identifier="showUserDetail" id="Uie-i8-uhT"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -216,6 +216,9 @@
                                         </imageView>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="1ab-Lp-JFd" kind="show" identifier="showUserDetail" id="q5H-2M-NCO"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -320,4 +323,7 @@
         <image name="Repository" width="24" height="24"/>
         <image name="User" width="24" height="24"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Uie-i8-uhT"/>
+    </inferredMetricsTieBreakers>
 </document>

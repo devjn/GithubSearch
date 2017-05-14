@@ -43,7 +43,7 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
     }
 
     override fun updateSearchResultsForSearchController(searchController: UISearchController?) {
-        println("--- updateSearchResultsForSearchController");
+
     }
 
     override fun searchBarSearchButtonClicked(searchBar: UISearchBar) {
@@ -52,6 +52,18 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
             println(query)
             search(query)
         }
+    }
+
+    override fun prepareForSegueSender(segue: UIStoryboardSegue?, sender: Any?) {
+        println("prepareForSegueSender")
+//        if(segue?.identifier()!!.equals("showUserDetail")) {
+        val index = this.tableView().indexPathForSelectedRow().item()
+        val user = mData.get(index.toInt())
+        val destViewController = segue!!.destinationViewController() as UserDetailsController
+        destViewController.user = user
+        print("user prepareForSegueSender")
+//        }
+//        else super.prepareForSegueSender(segue, sender)
     }
 
     override fun tableViewCellForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
@@ -70,18 +82,6 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
         return cell
     }
 
-    override fun prepareForSegueSender(segue: UIStoryboardSegue?, sender: Any?) {
-        print("prepareForSegueSender")
-//        if(segue?.identifier()!!.equals("showUserDetail")) {
-            val index = this.tableView().indexPathForSelectedRow().item()
-            val user = mData.get(index.toInt())
-            val destViewController = segue!!.destinationViewController() as UserDetailsController
-//            destViewController.setLoginName(user.login)
-            destViewController.user = user
-            print("user prepareForSegueSender")
-//        }
-//        else super.prepareForSegueSender(segue, sender)
-    }
 
     override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long): Long {
         return mData.size.toLong()
