@@ -97,24 +97,11 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
         mRecyclerView.addOnScrollListener(scrollListener)
         binding.emptyText.text = getString(if (mType == TYPE_USERS) R.string.find_users else R.string.find_repos)
-        mSearchView = inflater.inflate(R.layout.search_view, binding.root as ViewGroup, false) as FloatingSearchView   //binding.floatingSearchView
-        (binding.root as ViewGroup).addView(mSearchView)
+        mSearchView = binding.floatingSearchView
         setupSearchView()
         checkEmptyView()
         return binding.root
     }
-
-/*    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        // Temp fix to overcome SearchView disappearing bug
-        if (savedInstanceState != null) {
-            (binding.root as ViewGroup).removeView(mSearchView)
-            super.onViewStateRestored(savedInstanceState)
-            mSearchView = activity.layoutInflater.inflate(R.layout.search_view, binding.root as ViewGroup, false) as FloatingSearchView
-            (binding.root as ViewGroup).addView(mSearchView)
-            mSearchView.setSearchText(mLastQuery)
-            setupSearchView()
-        } else super.onViewStateRestored(savedInstanceState)
-    }*/
 
     override fun onDestroy() {
         mDisposables.dispose()
