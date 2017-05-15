@@ -115,7 +115,7 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         mData.clear()
-        mData.addAll(DataSource.usersFromCursor(AndroidCursor(data)))
+        mData.addAll(DataSource.usersFromCursor(AndroidCursor(data), false))
         rxDataSource.updateDataSet(mData).updateAdapter()
         binding.progressBar.visibility = View.GONE
         checkEmptyView()

@@ -63,7 +63,7 @@ class DataSource(private val dbHelper: ISQLiteDatabaseHelper) {
     companion object {
         val DATABASE_NAME = "GithubSearch.db"
 
-        fun usersFromCursor(cursor: ISQLiteCursor) : ArrayList<User> {
+        fun usersFromCursor(cursor: ISQLiteCursor, close: Boolean): ArrayList<User> {
             val users = ArrayList<User>()
             cursor.moveToFirst()
             while (!cursor.isAfterLast) {
@@ -71,7 +71,7 @@ class DataSource(private val dbHelper: ISQLiteDatabaseHelper) {
                 users.add(museum)
                 cursor.moveToNext()
             }
-            cursor.close()
+            if (close) cursor.close()
             return users
         }
     }
