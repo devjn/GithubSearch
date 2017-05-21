@@ -1,0 +1,1 @@
+{"output":"src/main/java","platform":"iOS","bindings":[{"type":"header","name":"RepoViewCell","objcClassGenerationMode":"Binding","headerPath":"xcode/GithubSearch","headerSearchPaths":[],"userHeaderSearchPaths":[],"frameworkSearchPaths":[],"packageBase":"org.moe.bindings","importCode":"#import <RepoViewCell.h>"}]}

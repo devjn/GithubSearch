@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="user"
+            name="mUser"
             type="com.github.devjn.githubsearch.utils.User"/>
     </data>
 
@@ -45,7 +45,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:popupTheme="@style/AppTheme.PopupOverlay"
-                    app:title="@{user.login}"/>
+                    app:title="@{mUser.login}"/>
 
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>

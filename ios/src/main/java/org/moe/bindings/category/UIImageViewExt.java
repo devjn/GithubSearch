@@ -28,6 +28,62 @@ public final class UIImageViewExt {
 	private UIImageViewExt() {
 	}
 
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3 {
+		@Generated
+		void call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3(
+				@NInt long arg0, @NInt long arg1, NSURL arg2);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4 {
+		@Generated
+		void call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4(
+				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithURLCompleted {
+		@Generated
+		void call_sd_setImageWithURLCompleted(UIImage arg0, NSError arg1,
+				@NInt long arg2, NSURL arg3);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithURLPlaceholderImageCompleted {
+		@Generated
+		void call_sd_setImageWithURLPlaceholderImageCompleted(UIImage arg0,
+				NSError arg1, @NInt long arg2, NSURL arg3);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithURLPlaceholderImageOptionsCompleted {
+		@Generated
+		void call_sd_setImageWithURLPlaceholderImageOptionsCompleted(
+				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3 {
+		@Generated
+		void call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3(
+				@NInt long arg0, @NInt long arg1, NSURL arg2);
+	}
+
+	@Runtime(ObjCRuntime.class)
+	@Generated
+	public interface Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4 {
+		@Generated
+		void call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4(
+				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
+	}
+
 	@Generated
 	@Selector("sd_cancelCurrentAnimationImagesLoad")
 	public static native void sd_cancelCurrentAnimationImagesLoad(
@@ -48,22 +104,6 @@ public final class UIImageViewExt {
 			@ObjCBlock(name = "call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3") Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3 progressBlock,
 			@ObjCBlock(name = "call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4") Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4 completedBlock);
 
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3 {
-		@Generated
-		void call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_3(
-				@NInt long arg0, @NInt long arg1, NSURL arg2);
-	}
-
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4 {
-		@Generated
-		void call_sd_setImageWithPreviousCachedImageWithURLPlaceholderImageOptionsProgressCompleted_4(
-				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
-	}
-
 	@Generated
 	@Selector("sd_setImageWithURL:")
 	public static native void sd_setImageWithURL(UIImageView _object, NSURL url);
@@ -74,14 +114,6 @@ public final class UIImageViewExt {
 			UIImageView _object,
 			NSURL url,
 			@ObjCBlock(name = "call_sd_setImageWithURLCompleted") Block_sd_setImageWithURLCompleted completedBlock);
-
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithURLCompleted {
-		@Generated
-		void call_sd_setImageWithURLCompleted(UIImage arg0, NSError arg1,
-				@NInt long arg2, NSURL arg3);
-	}
 
 	@Generated
 	@Selector("sd_setImageWithURL:placeholderImage:")
@@ -95,14 +127,6 @@ public final class UIImageViewExt {
 			NSURL url,
 			UIImage placeholder,
 			@ObjCBlock(name = "call_sd_setImageWithURLPlaceholderImageCompleted") Block_sd_setImageWithURLPlaceholderImageCompleted completedBlock);
-
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithURLPlaceholderImageCompleted {
-		@Generated
-		void call_sd_setImageWithURLPlaceholderImageCompleted(UIImage arg0,
-				NSError arg1, @NInt long arg2, NSURL arg3);
-	}
 
 	@Generated
 	@Selector("sd_setImageWithURL:placeholderImage:options:")
@@ -119,14 +143,6 @@ public final class UIImageViewExt {
 			@NUInt long options,
 			@ObjCBlock(name = "call_sd_setImageWithURLPlaceholderImageOptionsCompleted") Block_sd_setImageWithURLPlaceholderImageOptionsCompleted completedBlock);
 
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithURLPlaceholderImageOptionsCompleted {
-		@Generated
-		void call_sd_setImageWithURLPlaceholderImageOptionsCompleted(
-				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
-	}
-
 	@Generated
 	@Selector("sd_setImageWithURL:placeholderImage:options:progress:completed:")
 	public static native void sd_setImageWithURLPlaceholderImageOptionsProgressCompleted(
@@ -136,20 +152,4 @@ public final class UIImageViewExt {
 			@NUInt long options,
 			@ObjCBlock(name = "call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3") Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3 progressBlock,
 			@ObjCBlock(name = "call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4") Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4 completedBlock);
-
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3 {
-		@Generated
-		void call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_3(
-				@NInt long arg0, @NInt long arg1, NSURL arg2);
-	}
-
-	@Runtime(ObjCRuntime.class)
-	@Generated
-	public interface Block_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4 {
-		@Generated
-		void call_sd_setImageWithURLPlaceholderImageOptionsProgressCompleted_4(
-				UIImage arg0, NSError arg1, @NInt long arg2, NSURL arg3);
-	}
 }

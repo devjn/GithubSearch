@@ -11,6 +11,9 @@
 		58C6F5341DA66CB600309CB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58C6F5331DA66CB600309CB6 /* Assets.xcassets */; };
 		58C6F5371DA66CB600309CB6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 58C6F5351DA66CB600309CB6 /* LaunchScreen.storyboard */; };
 		58D2FBE17D5C4EF9E4AE58EE /* moe-main-interfaces.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DAE6EA7847C152022EC534C /* moe-main-interfaces.m */; };
+		840B45661ECA1C8B00B18D05 /* UserDetailsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 840B45651ECA1C8B00B18D05 /* UserDetailsController.m */; };
+		846B79031ECD820300193CE2 /* RepoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 846B79021ECD820300193CE2 /* RepoViewCell.m */; };
+		846B79061ED0272100193CE2 /* IntrinsicTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 846B79051ED0272100193CE2 /* IntrinsicTableView.m */; };
 		8490011A1EC6DF71005E27D3 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 849001181EC6DF71005E27D3 /* Storyboard.storyboard */; };
 		849001221EC72136005E27D3 /* BookmarksController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849001211EC72136005E27D3 /* BookmarksController.m */; };
 		849001241EC72140005E27D3 /* RepositorySearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849001231EC72140005E27D3 /* RepositorySearchController.m */; };
@@ -30,6 +33,11 @@
 		6DAE6EA7847C152022EC534C /* moe-main-interfaces.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "moe-main-interfaces.m"; path = "../build/moe/main/ui-headers/moe-main-interfaces.m"; sourceTree = "<group>"; };
 		7CCF7751CC61180218A6BDBE /* libPods-GithubSearch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GithubSearch.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E42487BD88E719453D9A8AF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		840B45651ECA1C8B00B18D05 /* UserDetailsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDetailsController.m; sourceTree = "<group>"; };
+		846B79011ECD820300193CE2 /* RepoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepoViewCell.h; sourceTree = "<group>"; };
+		846B79021ECD820300193CE2 /* RepoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RepoViewCell.m; sourceTree = "<group>"; };
+		846B79041ED0272100193CE2 /* IntrinsicTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrinsicTableView.h; sourceTree = "<group>"; };
+		846B79051ED0272100193CE2 /* IntrinsicTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntrinsicTableView.m; sourceTree = "<group>"; };
 		849001151EC6DF0C005E27D3 /* UserSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserSearchController.h; sourceTree = "<group>"; };
 		849001191EC6DF71005E27D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Storyboard.storyboard; sourceTree = "<group>"; };
 		8490011B1EC6EBA5005E27D3 /* RepositorySearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepositorySearchController.h; sourceTree = "<group>"; };
@@ -131,6 +139,11 @@
 				8490011E1EC6EBD7005E27D3 /* BookmarksController.h */,
 				849001211EC72136005E27D3 /* BookmarksController.m */,
 				849001291EC77F0E005E27D3 /* UserDetailsController.h */,
+				840B45651ECA1C8B00B18D05 /* UserDetailsController.m */,
+				846B79011ECD820300193CE2 /* RepoViewCell.h */,
+				846B79021ECD820300193CE2 /* RepoViewCell.m */,
+				846B79041ED0272100193CE2 /* IntrinsicTableView.h */,
+				846B79051ED0272100193CE2 /* IntrinsicTableView.m */,
 			);
 			path = GithubSearch;
 			sourceTree = "<group>";
@@ -340,8 +353,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				849001221EC72136005E27D3 /* BookmarksController.m in Sources */,
+				840B45661ECA1C8B00B18D05 /* UserDetailsController.m in Sources */,
 				849001241EC72140005E27D3 /* RepositorySearchController.m in Sources */,
 				849001261EC7214B005E27D3 /* UserSearchController.m in Sources */,
+				846B79031ECD820300193CE2 /* RepoViewCell.m in Sources */,
+				846B79061ED0272100193CE2 /* IntrinsicTableView.m in Sources */,
 				C53EFE0EA764A636602DAD66 /* main.cpp in Sources */,
 				58D2FBE17D5C4EF9E4AE58EE /* moe-main-interfaces.m in Sources */,
 			);

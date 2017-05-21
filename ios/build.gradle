@@ -43,9 +43,9 @@ moe {
         testTarget 'GithubSearch-Test'
 
         // Uncomment and change these settings if you are working with a Xcode workspace
-//         workspace 'xcode/GithubSearch.xcworkspace'
-//         mainScheme 'GithubSearch'
-//         testScheme 'GithubSearch-Test'
+        workspace 'xcode/GithubSearch.xcworkspace'
+        mainScheme 'GithubSearch'
+        testScheme 'GithubSearch-Test'
     }
 }
 

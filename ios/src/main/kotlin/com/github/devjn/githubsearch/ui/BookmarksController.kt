@@ -119,8 +119,8 @@ protected constructor(peer: Pointer) : UITableViewController(peer) {
             val index = this.tableView().indexPathForSelectedRow().item()
             val user = mData.get(index.toInt())
             val destViewController = segue.destinationViewController() as UserDetailsController
-            destViewController.user = user
-            print("user prepareForSegueSender")
+            destViewController.mUser = user
+            print("mUser prepareForSegueSender")
         } else super.prepareForSegueSender(segue, sender)
     }
 
