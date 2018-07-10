@@ -19,10 +19,8 @@ class App : Application() {
     }
 
     companion object {
-
-        val TAG = "SimpleFileManager"
+        const val TAG = "GithubSearch"
         @Volatile lateinit var applicationContext: Context
-
     }
 
 }

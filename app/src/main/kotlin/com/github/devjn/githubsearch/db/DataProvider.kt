@@ -21,23 +21,23 @@ class DataProvider : ContentProvider() {
 
     companion object {
 
-        val AUTHORITY = BuildConfig.APPLICATION_ID + ".utils.DataProvider"
-        val CONTENT_PROVIDER = "content://" + AUTHORITY
+        const val AUTHORITY = BuildConfig.APPLICATION_ID + ".utils.DataProvider"
+        val CONTENT_PROVIDER = "content://$AUTHORITY"
 //        val CONTENT_URI_SEARCH = Uri.parse(CONTENT_PROVIDER + "/" + Tables.SEARCH)
-        val CONTENT_URI_BOOKMARKS = Uri.parse(CONTENT_PROVIDER + "/" + UserEntity.TABLE_NAME)
+        val CONTENT_URI_BOOKMARKS = Uri.parse(CONTENT_PROVIDER + "/" + UserEntity.TABLE_NAME)!!
 
         private val uriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
 //        private val SEARCH_ALLROWS = 201
 //        private val SEARCH_SINGLE_ROW = 202
-        private val BOOKMARKS_ALLROWS = 203
-        private val BOOKMARKS_SINGLE_ROW = 204
+        private const val BOOKMARKS_ALLROWS = 203
+        private const val BOOKMARKS_SINGLE_ROW = 204
 
         init {
 //            uriMatcher.addURI(AUTHORITY, Tables.SEARCH, SEARCH_ALLROWS);
 //            uriMatcher.addURI(AUTHORITY, Tables.SEARCH + "/#", SEARCH_SINGLE_ROW);
-            uriMatcher.addURI(AUTHORITY, UserEntity.TABLE_NAME, BOOKMARKS_ALLROWS);
-            uriMatcher.addURI(AUTHORITY, UserEntity.TABLE_NAME + "/#", BOOKMARKS_SINGLE_ROW);
+            uriMatcher.addURI(AUTHORITY, UserEntity.TABLE_NAME, BOOKMARKS_ALLROWS)
+            uriMatcher.addURI(AUTHORITY, UserEntity.TABLE_NAME + "/#", BOOKMARKS_SINGLE_ROW)
         }
 
         // Helper method to easily insert and remove users
@@ -67,7 +67,7 @@ class DataProvider : ContentProvider() {
         val id: Long
         when (uriMatcher.match(uri)) {
             BOOKMARKS_ALLROWS -> id = db.insert(Tables.BOOKMARKS, null, AndroidContentValues(values!!))
-            else -> throw IllegalArgumentException("Unsupported URI: " + uri);
+            else -> throw IllegalArgumentException("Unsupported URI: $uri")
         }
         val insertUri = ContentUris.withAppendedId(uri, id)
         context.contentResolver.notifyChange(insertUri, null)
@@ -78,12 +78,12 @@ class DataProvider : ContentProvider() {
         val db = dbHelper.readableDatabase
         val qb = SQLiteQueryBuilder()
         when (uriMatcher.match(uri)) {
-            BOOKMARKS_ALLROWS -> qb.tables = Tables.BOOKMARKS;
+            BOOKMARKS_ALLROWS -> qb.tables = Tables.BOOKMARKS
             BOOKMARKS_SINGLE_ROW -> {
                 qb.tables = Tables.BOOKMARKS
-                qb.appendWhere(Tags.ID.fieldName + " = " + uri.lastPathSegment);
-            };
-            else -> throw IllegalArgumentException("Unsupported URI: " + uri);
+                qb.appendWhere(Tags.ID.fieldName + " = " + uri.lastPathSegment)
+            }
+            else -> throw IllegalArgumentException("Unsupported URI: $uri")
         }
         val c: Cursor
         c = qb.query(db.getNativeDb(), projection, selection, selectionArgs, null, null, sortOrder)
@@ -94,26 +94,25 @@ class DataProvider : ContentProvider() {
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
         val db = dbHelper.writableDatabase
         val count: Int
-        when (uriMatcher.match(uri)) {
-            BOOKMARKS_ALLROWS -> count = db.update(Tables.BOOKMARKS, AndroidContentValues(values!!), selection!!, selectionArgs)
-            BOOKMARKS_SINGLE_ROW -> count = db.update(Tables.BOOKMARKS, AndroidContentValues(values!!), Tags.ID.fieldName + " = ?", arrayOf(uri.lastPathSegment))
-            else -> throw IllegalArgumentException("Unsupported URI: " + uri);
+        count = when (uriMatcher.match(uri)) {
+            BOOKMARKS_ALLROWS -> db.update(Tables.BOOKMARKS, AndroidContentValues(values!!), selection!!, selectionArgs)
+            BOOKMARKS_SINGLE_ROW -> db.update(Tables.BOOKMARKS, AndroidContentValues(values!!), Tags.ID.fieldName + " = ?", arrayOf(uri.lastPathSegment))
+            else -> throw IllegalArgumentException("Unsupported URI: $uri")
         }
-        context.contentResolver.notifyChange(uri, null);
-        return count;
+        context.contentResolver.notifyChange(uri, null)
+        return count
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         val db = dbHelper.writableDatabase
         val count: Int
-        when (uriMatcher.match(uri)) {
-            BOOKMARKS_ALLROWS -> count = db.delete(Tables.BOOKMARKS, selection, selectionArgs)
-
-            BOOKMARKS_SINGLE_ROW -> count = db.delete(Tables.BOOKMARKS, Tags.ID.fieldName + " = ?", arrayOf(uri.lastPathSegment))
-            else -> throw IllegalArgumentException("Unsupported URI: " + uri);
+        count = when (uriMatcher.match(uri)) {
+            BOOKMARKS_ALLROWS -> db.delete(Tables.BOOKMARKS, selection, selectionArgs)
+            BOOKMARKS_SINGLE_ROW -> db.delete(Tables.BOOKMARKS, Tags.ID.fieldName + " = ?", arrayOf(uri.lastPathSegment))
+            else -> throw IllegalArgumentException("Unsupported URI: $uri")
         }
-        context.contentResolver.notifyChange(uri, null);
-        return count;
+        context.contentResolver.notifyChange(uri, null)
+        return count
     }
 
     override fun getType(uri: Uri?): String? {

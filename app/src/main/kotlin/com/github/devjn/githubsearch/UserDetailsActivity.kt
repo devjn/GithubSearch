@@ -1,5 +1,6 @@
 package com.github.devjn.githubsearch
 
+import GetPinnedReposQuery
 import android.content.Context
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
@@ -27,6 +28,7 @@ import com.github.devjn.githubsearch.model.entities.UserEntity
 import com.github.devjn.githubsearch.utils.*
 import com.github.devjn.githubsearch.views.PinnedCell
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 import java.util.*
@@ -35,13 +37,15 @@ import java.util.*
 class UserDetailsActivity : AppCompatActivity() {
     val TAG = UserDetailsActivity::class.simpleName
 
+    private val disposables = CompositeDisposable()
+
     private lateinit var binding: ActivityUserDetailsBinding
     private lateinit var mUser: User
-    private var bookmark = false
-    private var isBookmarked
-        get() = bookmark
+    private var isCreated = false
+
+    private var isBookmarked = false
         set(bookmarked) {
-            bookmark = bookmarked
+            field = bookmarked
             var drawable: Drawable
             if (bookmarked) {
                 drawable = VectorDrawableCompat.create(resources, R.drawable.ic_bookmarked, null)!!
@@ -49,37 +53,38 @@ class UserDetailsActivity : AppCompatActivity() {
                 DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.star_pressed))
             } else drawable = VectorDrawableCompat.create(resources, R.drawable.ic_bookmark, null)!!
             binding.fab.setImageDrawable(drawable)
+
+            if (isCreated) if (bookmarked) {
+                Log.i(TAG, "adding user to bookmarks: $mUser")
+                DataProvider.insertUser(this, mUser)
+                Toast.makeText(this, getString(R.string.user_bookmarked, mUser.login), Toast.LENGTH_SHORT).show()
+            } else {
+                Log.i(TAG, "removing user from bookmarks: $mUser")
+                DataProvider.removeUser(this, mUser)
+                Toast.makeText(this, getString(R.string.user_unbookmarked, mUser.login), Toast.LENGTH_SHORT).show()
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_user_details)
-        mUser = setup()
         setSupportActionBar(binding.toolbar)
         val colors = intArrayOf(R.drawable.gradient_01, R.drawable.gradient_02, R.drawable.gradient_03, R.drawable.gradient_04)
         binding.toolbarLayout.setBackgroundResource(colors[Random().nextInt(4)])
-        binding.fab.setOnClickListener { view ->
-            isBookmarked = !isBookmarked
-            if (isBookmarked) {
-                Log.i(TAG, "adding user to bookmarks: " + mUser)
-                DataProvider.insertUser(this, mUser)
-                Toast.makeText(this, getString(R.string.user_bookmarked, mUser.login), Toast.LENGTH_SHORT).show()
-            } else {
-                Log.i(TAG, "removing user from bookmarks: " + mUser)
-                DataProvider.removeUser(this, mUser)
-                Toast.makeText(this, getString(R.string.user_unbookmarked, mUser.login), Toast.LENGTH_SHORT).show()
-            }
-        }
-        val c = contentResolver.query(Uri.withAppendedPath(DataProvider.CONTENT_URI_BOOKMARKS, mUser.id.toString()),
+        binding.fab.setOnClickListener { isBookmarked = !isBookmarked }
+
+        mUser = setup()
+        val cursor = contentResolver.query(Uri.withAppendedPath(DataProvider.CONTENT_URI_BOOKMARKS, mUser.id.toString()),
                 arrayOf(UserEntity.Tags.ID.fieldName), null, null, null)
-        if (c != null && c.moveToFirst()) c.use { c ->
-            val user_id = c.getLong(c.getColumnIndex(UserEntity.Tags.ID.fieldName))
-            if (user_id == mUser.id) {
+        if (cursor != null && cursor.moveToFirst()) cursor.use { c ->
+            val userId = c.getLong(c.getColumnIndex(UserEntity.Tags.ID.fieldName))
+            if (userId == mUser.id) {
                 isBookmarked = true
             }
-            Log.i(TAG, "user_id: " + user_id)
+            Log.i(TAG, "user_id: $userId")
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        isCreated = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -93,9 +98,14 @@ class UserDetailsActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun setup(): User {
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.dispose()
+    }
+
+    private fun setup(): User {
         val extras = intent.extras
-        if(extras.containsKey(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME)) {
+        if (extras.containsKey(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME)) {
             //Postpone transition until image is loaded
             supportPostponeEnterTransition()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -122,39 +132,40 @@ class UserDetailsActivity : AppCompatActivity() {
         }).into(binding.imageProfile)
 
         val gitHubApi = GithubService.createService(GitHubApi::class.java)
-        gitHubApi.getUser(data.login).subscribeOn(Schedulers.io())
+        disposables.add(gitHubApi.getUser(data.login).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ user ->
                     user.isDetailed = true
-                    binding.content.user = user
+                    binding.content!!.user = user
                     user?.let { mUser = it }
                 }, { e ->
                     data.isDetailed = true
-                    binding.content.user = data
+                    binding.content!!.user = data
                     toastNetError()
                     Log.e(TAG, "Error while getting data", e)
-                })
+                }))
 
-        GithubService.pinnedService.getPinnedRepos(data.login).subscribeOn(Schedulers.io())
+        disposables.add(GithubGraphQL.getPinnedRepos(data.login)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
-                    if (list.isNotEmpty()) binding.content.pinnedCard.visibility = View.VISIBLE
-                    else binding.content.pinnedCard.visibility = View.GONE
-                    binding.content.grid.adapter = ReposAdapter(this@UserDetailsActivity, list)
-                    binding.content.pinnedProgress.visibility = View.GONE
+                    if (list.isNotEmpty()) binding.content?.pinnedCard!!.visibility = View.VISIBLE
+                    else binding.content!!.pinnedCard.visibility = View.GONE
+                    binding.content!!.grid.adapter = ReposAdapter(this@UserDetailsActivity, list)
+                    binding.content!!.pinnedProgress.visibility = View.GONE
                 }, { e ->
-                    binding.content.pinnedCard.visibility = View.GONE
+                    binding.content!!.pinnedCard.visibility = View.GONE
                     toastNetError()
                     Log.e(TAG, "Error while getting data", e)
-                })
+                }))
+
         return data
     }
 
-    private fun toastNetError() {
-        Toast.makeText(this, R.string.net_problem, Toast.LENGTH_SHORT).show()
-    }
+    private fun toastNetError() = Toast.makeText(this, R.string.net_problem, Toast.LENGTH_SHORT).show()
 
-    inner class ReposAdapter(private val context: Context, private val products: List<PinnedRepo>) : BaseAdapter() {
+
+    inner class ReposAdapter(private val context: Context, private val products: List<GetPinnedReposQuery.Edge>) : BaseAdapter() {
 
         override fun getCount(): Int = products.size
 
@@ -171,12 +182,12 @@ class UserDetailsActivity : AppCompatActivity() {
 
             if (convertView == null) {
                 view = PinnedCell(context)
-                view.setData(products[position])
+                view.setData(products[position].node()!!)
             } else {
                 view = convertView as PinnedCell
             }
             view.id = position
-            val lang = products[position].language
+            val lang = products[position].node()?.primaryLanguage()?.name()
             lang?.let {
                 val color: Int? = AndroidUtils.colors[it]
                 if (color != null)

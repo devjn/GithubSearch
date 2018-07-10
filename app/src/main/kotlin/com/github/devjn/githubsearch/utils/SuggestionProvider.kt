@@ -18,12 +18,12 @@ import android.util.Log
 
 class SuggestionProvider : android.content.SearchRecentSuggestionsProvider() {
     init {
-        setupSuggestions(SuggestionProvider.Companion.AUTHORITY, SuggestionProvider.Companion.MODE)
+        setupSuggestions(SuggestionProvider.AUTHORITY, SuggestionProvider.MODE)
     }
 
     companion object {
-        val AUTHORITY = "com.github.devjn.githubsearch.utils.SuggestionProvider"
-        val MODE = DATABASE_MODE_QUERIES
+        const val AUTHORITY = "com.github.devjn.githubsearch.utils.SuggestionProvider"
+        const val MODE = DATABASE_MODE_QUERIES
     }
 }
 
@@ -39,16 +39,16 @@ class SuggestionAdapter(private val activity: Activity, searchManager: SearchMan
                 val text1Col = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)
                 val list: ArrayList<GitSuggestion> = ArrayList(cursor.count)
                 if (cursor.moveToFirst()) {
-                    var count: Int = 0
+                    var count = 0
                     do {
                         list.add(GitSuggestion(cursor.getString(text1Col)))
                         count++
                     } while (cursor.moveToNext() && count < limit)
                     return list
                 }
-            } else Log.w("SuggestionAdapter", "cursor is null");
+            } else Log.w("SuggestionAdapter", "cursor is null")
         } catch (e: RuntimeException) {
-            Log.w("SuggestionAdapter", "Search suggestions query threw an exception.", e);
+            Log.w("SuggestionAdapter", "Search suggestions query threw an exception.", e)
         } finally {
             cursor?.close()
         }

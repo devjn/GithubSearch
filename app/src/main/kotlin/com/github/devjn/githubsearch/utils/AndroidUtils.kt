@@ -24,19 +24,19 @@ import java.io.IOException
 import java.nio.charset.Charset
 
 
-@BindingAdapter("bind:imageUrl")
+@BindingAdapter("imageUrl")
 fun loadImage(imageView: ImageView, url: String?) {
     Glide.with(imageView.context).load(url).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(imageView)
 }
 
-@BindingAdapter("bind:drawableLang")
+@BindingAdapter("drawableLang")
 fun setLangImage(textView: TextView, lang: String?) {
     lang?.let {
         val color: Int? = AndroidUtils.colors[it]
         if (color != null) {
             var drawable = ContextCompat.getDrawable(textView.context, R.drawable.round_point)
-            drawable = DrawableCompat.wrap(drawable)
+            drawable = DrawableCompat.wrap(drawable!!)
             DrawableCompat.setTint(drawable, color)
             drawable.setBounds(0, 0, AndroidUtils.dp(8f), AndroidUtils.dp(8f))
             textView.setCompoundDrawablesRelative(drawable, null, null, null)
@@ -65,11 +65,9 @@ object AndroidUtils {
         loadColors()
     }
 
-    fun dp(value: Float): Int {
-        return Math.ceil((density * value).toDouble()).toInt()
-    }
+    fun dp(value: Float) = Math.ceil((density * value).toDouble()).toInt()
 
-    fun loadColors() {
+    private fun loadColors() {
         val json: String?
         try {
             val ins = App.applicationContext.resources.openRawResource(R.raw.colors)
@@ -88,9 +86,9 @@ object AndroidUtils {
         val map: Map<String, String> = gson.fromJson(json, type)
 
         Observable.just(map)
-                .map({ stringObjectAMap -> stringObjectAMap.entries })
-                .flatMapIterable({ entries -> entries })
-                .map({ v -> colors.put(v.key, Color.parseColor(v.value)); v })
+                .map { stringObjectAMap -> stringObjectAMap.entries }
+                .flatMapIterable { entries -> entries }
+                .map { v -> colors.put(v.key, Color.parseColor(v.value)); v }
                 .subscribeOn(Schedulers.computation())
                 .subscribe({ v ->
                     // Log.i(TAG, "Color parsed, " + v)
@@ -112,7 +110,6 @@ object AndroidUtils {
     }
 
     fun startCustomTab(activity: Activity, url: String) {
-
         val uri = Uri.parse(url)
 
         // create an intent builder

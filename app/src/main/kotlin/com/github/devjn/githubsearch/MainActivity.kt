@@ -11,17 +11,13 @@ import android.view.View
 import com.github.devjn.githubsearch.databinding.ActivityMainBinding
 
 
-
-
-
-
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         // Set only when savedInstanceState is null to preserve state

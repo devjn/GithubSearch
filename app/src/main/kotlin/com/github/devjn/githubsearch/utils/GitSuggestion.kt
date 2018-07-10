@@ -35,13 +35,9 @@ class GitSuggestion : SearchSuggestion {
         }
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents() = 0
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(sugggestionName)
-    }
+    override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeString(sugggestionName)
 
     companion object {
         @JvmField val CREATOR = "GitSuggestion"

@@ -26,7 +26,6 @@ import com.github.devjn.githubsearch.model.entities.UserEntity
 import com.github.devjn.githubsearch.utils.User
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.subjects.PublishSubject
-import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 
 /**
@@ -49,8 +48,8 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         retainInstance = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate<FragmentBookmarksBinding>(inflater!!, R.layout.fragment_bookmarks, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bookmarks, container, false)
         mRecyclerView = binding.list
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView.layoutManager = mLayoutManager
@@ -78,7 +77,7 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
             val imageView = (bind as ListItemUserBinding).imageUser
             intent.putExtra(SearchFragment.EXTRA_DATA, bind.user)
             intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
                     imageView, ViewCompat.getTransitionName(imageView))
             startActivity(intent, options.toBundle())
         }
@@ -106,7 +105,7 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        val loader = CursorLoader(activity,
+        val loader = CursorLoader(activity!!,
                 DataProvider.CONTENT_URI_BOOKMARKS,
                 null, null, null,
                 UserEntity.Tags.LOGIN.fieldName + " ASC");

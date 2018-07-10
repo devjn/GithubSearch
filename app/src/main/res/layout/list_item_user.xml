@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="mUser"
+            name="user"
             type="com.github.devjn.githubsearch.utils.User"/>
     </data>
 
@@ -23,8 +23,8 @@
             android:layout_height="@dimen/image_size_list"
             android:layout_gravity="center_vertical"
             android:scaleType="center"
-            android:transitionName="@{mUser.login}"
-            app:imageUrl="@{mUser.avatar_url}"
+            android:transitionName="@{user.login}"
+            app:imageUrl="@{user.avatar_url}"
             tools:ignore="UnusedAttribute"
             tools:src="@mipmap/ic_launcher"/>
 
@@ -35,7 +35,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/spacing_medium"
             android:layout_weight="1"
-            android:text="@{mUser.login}"
+            android:text="@{user.login}"
             tools:text="Some Username"/>
     </LinearLayout>
 </layout>

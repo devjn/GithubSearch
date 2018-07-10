@@ -52,7 +52,7 @@ public class UserDetailsActivityTest {
         server = new MockWebServer();
         server.start();
         GithubService.changeApiBaseUrl(server.url("/").toString());
-        GithubService.changeApiPinnedBaseUrl(server.url("/").toString());
+        GithubService.changeApiGradpQLBaseUrl(server.url("/").toString());
 
 //        RxAndroidPlugins.setMainThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
 //            @Override
@@ -74,8 +74,8 @@ public class UserDetailsActivityTest {
                 .setBody(RestServiceTestHelper.getStringFromFile(getInstrumentation().getContext(), fileName2)));
 
         Intent intent = new Intent();
-        intent.putExtra(SearchFragment.Companion.getEXTRA_DATA(), getTestUser());
-        intent.putExtra(SearchFragment.Companion.getEXTRA_IMAGE_TRANSITION_NAME(), "some");
+        intent.putExtra(SearchFragment.EXTRA_DATA, getTestUser());
+        intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
         mActivityRule.launchActivity(intent);
 
         // This part some times not passing
@@ -101,8 +101,8 @@ public class UserDetailsActivityTest {
                 .setBody(""));
 
         Intent intent = new Intent();
-        intent.putExtra(SearchFragment.Companion.getEXTRA_DATA(), getTestUser());
-        intent.putExtra(SearchFragment.Companion.getEXTRA_IMAGE_TRANSITION_NAME(), "some");
+        intent.putExtra(SearchFragment.EXTRA_DATA, getTestUser());
+        intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
         mActivityRule.launchActivity(intent);
 
         onView(withText(R.string.empty_info)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)));

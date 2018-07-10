@@ -1,0 +1,15 @@
+query GetPinnedRepos($login: String!) {
+  repositoryOwner(login: $login) {
+      pinnedRepositories(first:6) {
+        edges {
+          node {
+            name
+            description
+            primaryLanguage {
+              name
+            }
+          }
+        }
+      }
+  }
+}

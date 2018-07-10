@@ -1,5 +1,6 @@
 package com.github.devjn.githubsearch.views
 
+import GetPinnedReposQuery
 import android.content.Context
 import android.text.TextUtils
 import android.view.Gravity
@@ -7,7 +8,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.github.devjn.githubsearch.R
-import com.github.devjn.githubsearch.utils.PinnedRepo
 import com.github.devjn.githubsearch.utils.AndroidUtils
 import com.github.devjn.githubsearch.utils.setLangImage
 
@@ -64,10 +64,10 @@ class PinnedCell : FrameLayout {
         super.onMeasure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(AndroidUtils.dp(120f), View.MeasureSpec.EXACTLY))
     }
 
-    fun setData(repo: PinnedRepo) {
-        nameTextView.setText(repo.repo)
-        descriptionTextView.setText(repo.description)
-        langTextView.setText(repo.language)
-        setLangImage(langTextView, repo.language)
+    fun setData(repo: GetPinnedReposQuery.Node) {
+        nameTextView.text = repo.name()
+        descriptionTextView.text = repo.description()
+        langTextView.text = repo.primaryLanguage()?.name()
+        setLangImage(langTextView, repo.primaryLanguage()?.name())
     }
 }

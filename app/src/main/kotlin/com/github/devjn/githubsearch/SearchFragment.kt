@@ -82,8 +82,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate<FragmentMainBinding>(inflater!!, R.layout.fragment_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
         mRecyclerView = binding.list
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView.layoutManager = mLayoutManager
@@ -110,8 +110,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
 
     private fun setupSearchView() {
-        val searchManager = context.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        suggestionAdapter = SuggestionAdapter(activity, searchManager)
+        val searchManager = requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        suggestionAdapter = SuggestionAdapter(activity!!, searchManager)
 
         mSearchView.setOnQueryChangeListener { oldQuery, newQuery ->
             if (oldQuery != "" && newQuery == "") {
@@ -183,7 +183,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
         onClickSubject.subscribe { bind ->
             when (mType) {
-                TYPE_REPOSITORIES -> AndroidUtils.startCustomTab(activity, (bind as ListItemRepositoryBinding).repo.html_url)
+                TYPE_REPOSITORIES -> AndroidUtils.startCustomTab(activity!!, (bind as ListItemRepositoryBinding).repo!!.html_url)
 
                 TYPE_USERS -> {
                     val intent = Intent(context, UserDetailsActivity::class.java)
@@ -191,7 +191,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
                     val imageView = (bind as ListItemUserBinding).imageUser
                     intent.putExtra(EXTRA_DATA, bind.user)
                     if (imageView.drawable != null) intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
-                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
                             imageView, ViewCompat.getTransitionName(imageView))
                     startActivity(intent, options.toBundle())
                 }
@@ -264,19 +264,19 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
     companion object {
 
-        val KEY_TYPE = "TYPE"
-        val TYPE_USERS = 0
-        val TYPE_REPOSITORIES = 1
+        const val KEY_TYPE = "TYPE"
+        const val TYPE_USERS = 0
+        const val TYPE_REPOSITORIES = 1
 
-        val EXTRA_DATA = "data"
-        val EXTRA_IMAGE_TRANSITION_NAME = "transition_name"
+        const val EXTRA_DATA = "data"
+        const val EXTRA_IMAGE_TRANSITION_NAME = "transition_name"
 
-        val SNACKBAR_LENGTH = 6000
+        const val SNACKBAR_LENGTH = 6000
 
         fun newInstance(type: Int): Fragment = newInstance(type, null)
 
         fun newInstance(type: Int, bundle: Bundle?): Fragment {
-            val args: Bundle = Bundle()
+            val args = Bundle()
             args.putInt(KEY_TYPE, type)
             bundle?.let { args.putAll(it) }
             val fragment = if (type == TYPE_USERS) SearchFragment<User>() else SearchFragment<Repository>()
