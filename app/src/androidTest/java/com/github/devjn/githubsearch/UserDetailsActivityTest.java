@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.devjn.githubsearch.utils.GithubGraphQL;
 import com.github.devjn.githubsearch.utils.GithubService;
 
 import org.hamcrest.Description;
@@ -52,7 +53,7 @@ public class UserDetailsActivityTest {
         server = new MockWebServer();
         server.start();
         GithubService.changeApiBaseUrl(server.url("/").toString());
-        GithubService.changeApiGradpQLBaseUrl(server.url("/").toString());
+        GithubGraphQL.changeApiGraphQLBaseUrl(server.url("/").toString());
 
 //        RxAndroidPlugins.setMainThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
 //            @Override

@@ -18,12 +18,11 @@ object GithubGraphQL {
     var GRAPHQL_BASE_URL = "https://api.github.com/graphql"
         internal set
 
-    val okHttp = OkHttpClient
+    private val okHttp: OkHttpClient = OkHttpClient
             .Builder()
             .addInterceptor { chain ->
                 val original = chain.request()
-                val builder = original.newBuilder().method(original.method(),
-                        original.body())
+                val builder = original.newBuilder().method(original.method(), original.body())
                 builder.addHeader("Authorization", "Bearer " + BuildConfig.AUTH_TOKEN)
                 chain.proceed(builder.build())
             }
@@ -38,7 +37,7 @@ object GithubGraphQL {
 
 
     @JvmStatic
-    fun changeApiGradpQLBaseUrl(newApiPinBaseUrl: String) {
+    fun changeApiGraphQLBaseUrl(newApiPinBaseUrl: String) {
         GRAPHQL_BASE_URL = newApiPinBaseUrl
 
         apolloBuilder = ApolloClient.builder()
@@ -53,22 +52,7 @@ object GithubGraphQL {
                 .login(user)
                 .build()
 
-        return Rx2Apollo.from(apolloClient.query(queryCall)).map { data ->  data.data()?.repositoryOwner()?.pinnedRepositories()?.edges()};
-/*        apolloClient.query(queryCall).enqueue(object : ApolloCall.Callback<GetPinnedReposQuery.Data>() {
-            override fun onFailure(e: ApolloException) {
-                completion(Pair(null, Error(e.message)))
-            }
-
-            override fun onResponse(response: com.apollographql.apollo.api.Response<GetPinnedReposQuery.Data>) {
-                val errors = response.errors()
-                if (!errors.isEmpty()) {
-                    val message = errors[0]?.message() ?: ""
-                    completion(Pair(null, Error(message)))
-                } else {
-                    completion(Pair(response.data()?.repositoryOwner()?.pinnedRepositories()?.edges(), null))
-                }
-            }
-        })*/
+        return Rx2Apollo.from(apolloClient.query(queryCall)).map { response -> response.data()?.repositoryOwner()?.pinnedRepositories()?.edges() };
     }
 
 }

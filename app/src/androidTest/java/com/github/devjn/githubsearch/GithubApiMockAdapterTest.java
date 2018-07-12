@@ -36,12 +36,11 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(AndroidJUnit4.class)
 public class GithubApiMockAdapterTest {
     private MockRetrofit mockRetrofit;
-    private Retrofit retrofit;
 
     @Before
     public void setUp() throws Exception {
 
-        retrofit = new Retrofit.Builder().baseUrl("http://test.com")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://test.com")
                 .client(new OkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
