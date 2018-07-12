@@ -15,7 +15,7 @@ import com.github.devjn.githubsearch.utils.GitData
 import com.github.devjn.githubsearch.utils.GitHubApi
 import com.github.devjn.githubsearch.utils.GitObject
 import com.github.devjn.githubsearch.utils.GithubService
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.ios.schedulers.IOSSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -38,21 +38,21 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
 
     protected lateinit var searchController: UISearchController
 
-    open val TAG = BaseSearchController::class.simpleName
-    val mType: Int
+    open val TAG = BaseSearchController::class.java.simpleName!!
     val CELL_IDENTIFIER: String
+    val type: Int
 
-    protected val mData: ArrayList<T> = ArrayList()
+    protected val data: ArrayList<T> = ArrayList()
     protected val gitHubApi = GithubService.createService(GitHubApi::class.java)
 
-    protected var mDisposables: CompositeDisposable = CompositeDisposable()
-    protected var mLastGitData: GitData<T>? = null
-    protected var mLastQuery = ""
+    protected var disposables: CompositeDisposable = CompositeDisposable()
+    protected var lastGitData: GitData<T>? = null
+    protected var lastQuery = ""
 
     private var operationQueue: NSOperationQueue
 
     protected constructor(peer: Pointer, type: Int) : super(peer) {
-        this.mType = type
+        this.type = type
         this.CELL_IDENTIFIER = if (type == TYPE_USERS) "userCell" else "repositoryCell"
         operationQueue = NSOperationQueue.alloc().init()
         operationQueue.setQualityOfService(NSQualityOfService.Background)
@@ -81,27 +81,28 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
 
 
     fun search(query: String) {
-        showProgress(true)
-        val api: Observable<GitData<T>> =
-                (if (mType == TYPE_USERS) gitHubApi.getUsers(query) else gitHubApi.getRepositories(query)) as Observable<GitData<T>>
-        mDisposables.add(api.subscribeOn(Schedulers.io())
+        val api: Single<GitData<T>> =
+                (if (type == TYPE_USERS) gitHubApi.getUsers(query) else gitHubApi.getRepositories(query)) as Single<GitData<T>>
+        disposables.add(api.subscribeOn(Schedulers.io())
                 .observeOn(IOSSchedulers.mainThread())
+                .doOnSubscribe { showProgress(true) }
+                .doFinally { showProgress(false) }
                 .subscribe({ gitData ->
-                    mData.clear()
-                    gitData.items?.let { mData.addAll(it) }
-                    mLastGitData = gitData
+                    data.clear()
+                    gitData.items?.let { data.addAll(it) }
+                    lastGitData = gitData
                     this.tableView().reloadData()
-                    showProgress(false)
                     Log.e(TAG, "Loaded data")
-                }, { e ->
-                    showProgress(false)
-                    Log.e(TAG, "Error while getting data", e)
-                }));
+                }, { e -> Log.e(TAG, "Error while getting data", e) }));
     }
 
-    override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long): Long {
-        return mData.size.toLong()
+
+    override fun viewDidUnload() {
+        disposables.clear()
+        super.viewDidUnload()
     }
+
+    override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long) = data.size.toLong()
 
 
     @Selector("setNavigation:")
@@ -119,7 +120,7 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
         }
     }
 
-    var indicator = UIActivityIndicatorView.alloc()
+    private var indicator = UIActivityIndicatorView.alloc()!!
 
     fun activityIndicator() {
         indicator.initWithFrame(CGRectMake(0.0, 0.0, 48.0, 48.0))
@@ -129,7 +130,7 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
     }
 
     fun showProgress(show: Boolean) {
-        if(show) {
+        if (show) {
             indicator.startAnimating()
             indicator.setBackgroundColor(UIColor.whiteColor())
         } else {
@@ -160,10 +161,8 @@ abstract class BaseSearchController<T : GitObject> : UITableViewController,
     }
 
     companion object {
-
-        val TYPE_USERS = 0
-        val TYPE_REPOSITORIES = 1
-
+        const val TYPE_USERS = 0
+        const val TYPE_REPOSITORIES = 1
     }
 
 }

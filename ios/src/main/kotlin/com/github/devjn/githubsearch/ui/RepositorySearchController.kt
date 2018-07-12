@@ -56,7 +56,7 @@ protected constructor(peer: Pointer) : BaseSearchController<Repository>(peer, Ba
 
     override fun tableViewCellForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
         val cell = tableView.dequeueReusableCellWithIdentifierForIndexPath(CELL_IDENTIFIER, indexPath)
-        val repo = mData.get(indexPath.item().toInt())
+        val repo = data.get(indexPath.item().toInt())
 
         cell.textLabel().setText(repo.full_name)
         cell.detailTextLabel().setText(repo.description)
@@ -65,11 +65,11 @@ protected constructor(peer: Pointer) : BaseSearchController<Repository>(peer, Ba
 
 
     override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long): Long {
-        return mData.size.toLong()
+        return data.size.toLong()
     }
 
     override fun numberOfSectionsInTableView(tableView: UITableView?): Long {
-        if (mData.size > 0) {
+        if (data.size > 0) {
             TableViewHelper.restore(this)
             return 1
         } else {
@@ -79,7 +79,7 @@ protected constructor(peer: Pointer) : BaseSearchController<Repository>(peer, Ba
     }
 
     override fun tableViewDidSelectRowAtIndexPath(tableView: UITableView?, indexPath: NSIndexPath?) {
-        val repo = mData.get(indexPath!!.item().toInt())
+        val repo = data.get(indexPath!!.item().toInt())
         open(repo.html_url)
     }
 

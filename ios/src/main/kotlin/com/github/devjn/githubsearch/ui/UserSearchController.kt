@@ -33,9 +33,9 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
         UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate {
 
     @Selector("init")
-    override external fun init(): UserSearchController
+    external override fun init(): UserSearchController
 
-    override val TAG = UserSearchController::class.simpleName
+    override val TAG = UserSearchController::class.java.simpleName!!
 
     override fun viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +58,7 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
         println("prepareForSegueSender")
 //        if(segue?.identifier()!!.equals("showUserDetail")) {
         val index = this.tableView().indexPathForSelectedRow().item()
-        val user = mData.get(index.toInt())
+        val user = data.get(index.toInt())
         val destViewController = segue!!.destinationViewController() as UserDetailsController
         destViewController.mUser = user
         print("mUser prepareForSegueSender")
@@ -68,7 +68,7 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
 
     override fun tableViewCellForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
         var cell = tableView.dequeueReusableCellWithIdentifierForIndexPath(CELL_IDENTIFIER, indexPath)
-        val user = mData.get(indexPath.item().toInt())
+        val user = data.get(indexPath.item().toInt())
         println("--- tableViewCellForRowAtIndexPath " + indexPath.item());
 
         if (cell == null) {
@@ -84,11 +84,11 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
 
 
     override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long): Long {
-        return mData.size.toLong()
+        return data.size.toLong()
     }
 
     override fun numberOfSectionsInTableView(tableView: UITableView?): Long {
-        if (mData.size > 0) {
+        if (data.size > 0) {
             BaseSearchController.TableViewHelper.restore(this)
             return 1
         } else {
@@ -112,7 +112,8 @@ class UserSearchController(peer: Pointer) : BaseSearchController<User>(peer, Bas
 
         @Owned
         @Selector("alloc")
-        @JvmStatic external fun alloc(): UserSearchController
+        @JvmStatic
+        external fun alloc(): UserSearchController
 
         @Selector("initialize")
         external fun initialize()

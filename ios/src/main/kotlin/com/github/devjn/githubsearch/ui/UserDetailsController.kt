@@ -1,6 +1,7 @@
 package com.github.devjn.githubsearch.ui
 
 
+import GetPinnedReposQuery
 import android.util.Log
 import apple.coregraphics.c.CoreGraphics
 import apple.foundation.NSBundle
@@ -15,9 +16,10 @@ import apple.uikit.protocol.UITableViewDelegate
 import com.github.devjn.githubsearch.Main
 import com.github.devjn.githubsearch.model.db.DataSource
 import com.github.devjn.githubsearch.utils.GitHubApi
+import com.github.devjn.githubsearch.utils.GithubGraphQL
 import com.github.devjn.githubsearch.utils.GithubService
-import com.github.devjn.githubsearch.utils.PinnedRepo
 import com.github.devjn.githubsearch.utils.User
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.ios.schedulers.IOSSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.moe.bindings.RepoViewCell
@@ -47,13 +49,13 @@ class UserDetailsController
 protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelegate, UITableViewDataSource {
 
     @Selector("init")
-    override external fun init(): UserDetailsController
+    external override fun init(): UserDetailsController
 
     @Selector("initWithCoder:")
-    override external fun initWithCoder(aDecoder: NSCoder): UserDetailsController
+    external override fun initWithCoder(aDecoder: NSCoder): UserDetailsController
 
     @Selector("initWithNibName:bundle:")
-    override external fun initWithNibNameBundle(
+    external override fun initWithNibNameBundle(
             nibNameOrNil: String, nibBundleOrNil: NSBundle): UserDetailsController
 
     @Selector("setImageView:")
@@ -66,11 +68,6 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
     @Property
     @IBOutlet
     external fun imageView(): UIImageView
-
-//    @Selector("mainStack")
-//    @Property
-//    @IBOutlet
-//    external fun mainStack(): UIStackView
 
     @Selector("infoView")
     @Property
@@ -122,11 +119,9 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
     @IBOutlet
     external fun tableView(): UITableView
 
+    private val disposables = CompositeDisposable()
+    private val repos: ArrayList<GetPinnedReposQuery.Node?> = ArrayList()
 
-    val TAG = UserDetailsController::class.simpleName
-    val CELL_IDENTIFIER = "RepoCell"
-
-    private val mRepos: ArrayList<PinnedRepo> = ArrayList()
     private var source: DataSource = Main.dataSource
     private var isBookmarked = false
 
@@ -156,17 +151,19 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
                         Log.e(TAG, "Error while getting data", e)
                     })
 
-            GithubService.pinnedService.getPinnedRepos(it.login).subscribeOn(Schedulers.io())
+            disposables.add(GithubGraphQL.getPinnedRepos(it.login)
+                    .subscribeOn(Schedulers.io())
                     .observeOn(IOSSchedulers.mainThread())
+                    .map { t -> ArrayList<GetPinnedReposQuery.Node?>(t.size).apply { t.forEach { this.add(it.node()) } } }
                     .subscribe({ list ->
                         if (list.isNotEmpty()) {
-                            mRepos.addAll(list)
+                            repos.addAll(list)
                             this.tableView().reloadData()
                             Log.i(TAG, "Loaded repos: " + list.size)
                         }
                     }, { e ->
                         Log.e(TAG, "Error while getting data", e)
-                    })
+                    }))
         } ?: println("mUser is null")
 
         if (source.getUserById(mUser!!.id) != null)
@@ -177,6 +174,13 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
         setupActivityIndicator()
         showProgress(true)
     }
+
+
+    override fun viewDidUnload() {
+        super.viewDidUnload()
+        disposables.dispose()
+    }
+
 
     private fun setupUser(user: User) {
         textName().setText(user.name)
@@ -196,22 +200,22 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
         infoView().setNeedsLayout()
         infoView().layoutIfNeeded()
 
-        UIView.animateWithDurationAnimations(1.0, {
+        UIView.animateWithDurationAnimations(1.0) {
             infoView().isHidden = false
             showProgress(false)
-        })
+        }
     }
 
-    var indicator = UIActivityIndicatorView.alloc()
+    private var indicator = UIActivityIndicatorView.alloc()
 
-    fun setupActivityIndicator() {
+    private fun setupActivityIndicator() {
         indicator.initWithFrame(CoreGraphics.CGRectMake(0.0, 0.0, 48.0, 48.0))
         indicator.setActivityIndicatorViewStyle(UIActivityIndicatorViewStyle.Gray)
         indicator.setCenter(this.view().center())
         this.view().addSubview(indicator)
     }
 
-    fun showProgress(show: Boolean) {
+    private fun showProgress(show: Boolean) {
         if (show) {
             indicator.startAnimating()
             indicator.setBackgroundColor(UIColor.whiteColor())
@@ -222,18 +226,18 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
     }
 
 
-    fun addToBookmarks() {
+    private fun addToBookmarks() {
         source.createUser(mUser!!)
         isBookmarked = true
         navigationItem().rightBarButtonItem().setImage(UIImage.imageNamed("Bookmark"))
-        Log.i(TAG, "adding mUser to bookmarks: " + mUser)
+        Log.i(TAG, "adding mUser to bookmarks: $mUser")
     }
 
-    fun removeFromBookmarks() {
+    private fun removeFromBookmarks() {
         source.deleteUser(mUser!!.id.toInt())
         isBookmarked = false
         navigationItem().rightBarButtonItem().setImage(UIImage.imageNamed("NonBookmark"))
-        Log.i(TAG, "removing mUser from bookmarks: " + mUser)
+        Log.i(TAG, "removing mUser from bookmarks: $mUser")
     }
 
     @Selector("bookmark:")
@@ -246,11 +250,11 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
 
     override fun tableViewCellForRowAtIndexPath(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
         val cell = tableView.dequeueReusableCellWithIdentifierForIndexPath(CELL_IDENTIFIER, indexPath) as RepoViewCell
-        val repo = mRepos.get(indexPath.item().toInt())
+        val repo = repos[indexPath.item().toInt()]
 
-        cell.titleLabel().setText(repo.repo)
-        cell.descriptionLabel().setText(repo.description)
-        cell.langLabel().setText(repo.language)
+        cell.titleLabel().setText(repo?.name())
+        cell.descriptionLabel().setText(repo?.description())
+        cell.langLabel().setText(repo?.primaryLanguage()?.name())
         cell.contentView().layer().setBorderWidth(1.0)
         cell.contentView().layer().setBorderColor(UIColor.blackColor().CGColor())
         println("cell is build " + indexPath.item())
@@ -258,13 +262,13 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
     }
 
     override fun tableViewNumberOfRowsInSection(tableView: UITableView, @NInt section: Long): Long {
-        println("tableViewNumberOfRowsInSection " + mRepos.size.toLong())
-        val size = mRepos.size.toLong()
+        println("tableViewNumberOfRowsInSection " + repos.size.toLong())
+        val size = repos.size.toLong()
         if (size > 0 && tableView().isHidden) {
-            UIView.animateWithDurationAnimations(1.0, {
+            UIView.animateWithDurationAnimations(1.0) {
                 tableView().isHidden = false
                 showProgress(false)
-            })
+            }
         }
         return size
     }
@@ -279,13 +283,17 @@ protected constructor(peer: Pointer) : UIViewController(peer), UITableViewDelega
 
 
     companion object {
+        private const val CELL_IDENTIFIER = "RepoCell"
+        val TAG = UserDetailsController::class.java.simpleName!!
+
         init {
             NatJ.register()
         }
 
         @Owned
         @Selector("alloc")
-        @JvmStatic external fun alloc(): UserDetailsController
+        @JvmStatic
+        external fun alloc(): UserDetailsController
 
         @Selector("initialize")
         external fun initialize()

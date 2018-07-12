@@ -54,10 +54,6 @@ protected constructor(peer: Pointer) : UITableViewController(peer) {
     @Selector("initWithStyle:")
     override external fun initWithStyle(@NInt style: Long): BookmarksController
 
-    val TAG = BookmarksController::class.simpleName
-
-    private val CELL_IDENTIFIER = "bookmarkCell"
-
     private val mData: ArrayList<User> = ArrayList()
     private val gitHubApi = GithubService.createService(GitHubApi::class.java)
     private var source: DataSource = Main.dataSource
@@ -159,12 +155,17 @@ protected constructor(peer: Pointer) : UITableViewController(peer) {
     }
 
     companion object {
+        private const val CELL_IDENTIFIER = "bookmarkCell"
+
+        val TAG = BookmarksController::class.java.simpleName!!
+
         init {
             NatJ.register()
         }
 
         @Owned
         @Selector("alloc")
-        @JvmStatic external fun alloc(): BookmarksController
+        @JvmStatic
+        external fun alloc(): BookmarksController
     }
 }
