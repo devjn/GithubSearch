@@ -58,7 +58,7 @@ fun setLangImage(textView: TextView, lang: String?) {
  */
 object AndroidUtils : NativeUtilsResolver {
 
-    val TAG = AndroidUtils::class.simpleName
+    val TAG = AndroidUtils::class.java.simpleName
 
     var density = 1f
 

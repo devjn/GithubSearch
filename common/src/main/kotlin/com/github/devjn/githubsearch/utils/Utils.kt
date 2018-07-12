@@ -15,7 +15,7 @@ import com.github.devjn.githubsearch.database.ISQLiteDatabase
  */
 object Utils {
 
-    val TAG = Utils::class.simpleName
+    val TAG = Utils::class.java.simpleName
 
     fun <T : Any, R : Any> whenAllNotNull(vararg options: T?, block: (List<T>) -> R) {
         if (options.all { it != null }) {

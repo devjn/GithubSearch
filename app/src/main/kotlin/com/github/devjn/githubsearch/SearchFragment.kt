@@ -29,8 +29,10 @@ import com.github.devjn.githubsearch.utils.*
 import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
@@ -43,7 +45,7 @@ import io.reactivex.subjects.PublishSubject
  */
 class SearchFragment<T : GitObject>() : BaseFragment() {
 
-    val TAG = SearchFragment::class.simpleName
+    val TAG = SearchFragment::class.java.simpleName!!
 
     private var mData: ArrayList<T> = ArrayList()
     private var mType: Int = TYPE_USERS
@@ -74,9 +76,9 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         val args = arguments
         args?.let {
             if (it.containsKey(KEY_TYPE))
-                mType = args.getInt(KEY_TYPE)
-            if (args.containsKey(SearchManager.QUERY)) {
-                mLastQuery = args.getString(SearchManager.QUERY)
+                mType = it.getInt(KEY_TYPE)
+            if (it.containsKey(SearchManager.QUERY)) {
+                mLastQuery = it.getString(SearchManager.QUERY)
                 isSearchIntent = true
             }
         }
@@ -207,46 +209,33 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         // reset infinite scroll
         scrollListener.resetState()
         suggestions.saveRecentQuery(query, null)
-        binding.progressBar.visibility = View.VISIBLE
 
-        val api: Observable<GitData<T>> =
-                (if (mType == TYPE_USERS) gitHubApi.getUsers(query) else gitHubApi.getRepositories(query)) as Observable<GitData<T>>
-        mDisposables.add(api.subscribeOn(Schedulers.io())
+        mDisposables.add(getApi(query).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ gitData ->
+                .doOnSubscribe { binding.progressBar.visibility = View.VISIBLE }
+                .doFinally { binding.progressBar.visibility = View.GONE }
+                .subscribe(Consumer<GitData<T>> { gitData ->
                     mData.clear()
                     gitData.items?.let { mData.addAll(it) }
                     rxDataSource.updateDataSet(mData).updateAdapter()
-                    binding.progressBar.visibility = View.GONE
                     mLastGitData = gitData
                     if (mData.isEmpty())
                         binding.emptyText.text = getString(R.string.nothing_found)
                     checkEmptyView()
-                }, { e ->
-                    Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
-                            .setAction(R.string.retry, { search(query) }).show()
-                    binding.progressBar.visibility = View.GONE
-                    Log.e(TAG, "Error while getting data", e)
-                }));
+                }, onError));
     }
+
 
     private fun loadMore(page: Int, count: Int) {
         if (mLastGitData?.total_count == count) return
-        val api: Observable<GitData<T>> = if (mType == TYPE_USERS) gitHubApi.getUsers(mLastQuery, page) as Observable<GitData<T>>
-        else gitHubApi.getRepositories(mLastQuery, page) as Observable<GitData<T>>
-        binding.scrollProgress.visibility = View.VISIBLE
-        mDisposables.add(api.subscribeOn(Schedulers.io())
+        mDisposables.add(getApi(mLastQuery, page).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ gitData ->
+                .doOnSubscribe { binding.scrollProgress.visibility = View.VISIBLE }
+                .doFinally { binding.scrollProgress.visibility = View.GONE }
+                .subscribe(Consumer<GitData<T>> { gitData ->
                     gitData.items?.let { mData.addAll(it) }
                     rxDataSource.updateDataSet(mData).updateNotifyInsertedAdapter(count, mData.size)
-                    binding.scrollProgress.visibility = View.GONE
-                }, { e ->
-                    binding.scrollProgress.visibility = View.GONE
-                    Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
-                            .setAction(R.string.retry, { search(mLastQuery) }).show()
-                    Log.e(TAG, "Error while getting data", e)
-                }));
+                }, onError));
     }
 
     private fun checkEmptyView() {
@@ -261,6 +250,19 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         }
         return super.onBackPressedCaptured()
     }
+
+    private fun getApi(query: String, page: Int = 1): Single<GitData<T>> =
+            (if (mType == TYPE_USERS) gitHubApi.getUsers(query)
+            else gitHubApi.getRepositories(query)) as Single<GitData<T>>
+
+    private val onError: Consumer<Throwable> by lazy {
+        Consumer<Throwable> { e ->
+            Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
+                    .setAction(R.string.retry) { search(mLastQuery) }.show()
+            Log.e(TAG, "Error while getting data", e)
+        }
+    }
+
 
     companion object {
 

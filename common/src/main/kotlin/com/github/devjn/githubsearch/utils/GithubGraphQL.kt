@@ -4,6 +4,7 @@ import GetPinnedReposQuery
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.github.devjn.currencyobserver.utils.NativeUtils
+import com.github.devjn.githubsearch.common.BuildConfig
 import io.reactivex.Observable
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -36,7 +37,7 @@ object GithubGraphQL {
                 .addInterceptor { chain ->
                     val original = chain.request()
                     val builder = original.newBuilder().method(original.method(), original.body())
-                    builder.addHeader("Authorization", "Bearer " + com.github.devjn.githubsearch.BuildConfig.AUTH_TOKEN)
+                    builder.addHeader("Authorization", "Bearer " + BuildConfig.AUTH_TOKEN)
                     chain.proceed(builder.build())
                 }
                 .addInterceptor(GithubService.provideOfflineCacheInterceptor())
@@ -61,8 +62,7 @@ object GithubGraphQL {
     }
 
     fun getPinnedRepos(user: String): Observable<List<GetPinnedReposQuery.Edge>> {
-        val queryCall = GetPinnedReposQuery
-                .builder()
+        val queryCall = GetPinnedReposQuery.builder()
                 .login(user)
                 .build()
 

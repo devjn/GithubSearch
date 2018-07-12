@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.apollographql.android'
 
 android {
     compileSdkVersion 27
@@ -14,7 +13,7 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
 
-        multiDexEnabled true
+        multiDexEnabled false
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -36,15 +35,6 @@ android {
     dataBinding {
         enabled = true
     }
-
-    Properties properties = new Properties()
-    InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
-    properties.load( inputStream )
-
-    buildTypes.each {
-        it.buildConfigField('String', "AUTH_TOKEN", properties.getProperty('TOKEN'))
-    }
-
 }
 
 ext {
@@ -66,7 +56,6 @@ dependencies {
 
     // Kotlin std lib
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     //DataBinding
     kapt "com.android.databinding:compiler:$android_plugin_version"
 
@@ -80,8 +69,6 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    implementation "com.apollographql.apollo:apollo-runtime:$apolloVersion"
-    implementation "com.apollographql.apollo:apollo-rx2-support:$apolloVersion"
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 

@@ -34,8 +34,9 @@ import java.lang.Exception
 import java.util.*
 
 
+val TAG = UserDetailsActivity::class.java.simpleName!!
+
 class UserDetailsActivity : AppCompatActivity() {
-    val TAG = UserDetailsActivity::class.simpleName
 
     private val disposables = CompositeDisposable()
 
