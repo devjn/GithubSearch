@@ -1,9 +1,11 @@
 package com.github.devjn.githubsearch.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
@@ -13,6 +15,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.github.devjn.currencyobserver.utils.NativeUtils
+import com.github.devjn.currencyobserver.utils.NativeUtilsResolver
 import com.github.devjn.githubsearch.App
 import com.github.devjn.githubsearch.R
 import com.google.gson.Gson
@@ -20,6 +24,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
 
@@ -51,7 +56,7 @@ fun setLangImage(textView: TextView, lang: String?) {
  * devjn@jn-arts.com
  * Utils
  */
-object AndroidUtils {
+object AndroidUtils : NativeUtilsResolver {
 
     val TAG = AndroidUtils::class.simpleName
 
@@ -60,6 +65,7 @@ object AndroidUtils {
     lateinit var colors: HashMap<String, Int>
 
     fun setup(context: Context) {
+        NativeUtils.registerResolver(this)
         density = context.resources.displayMetrics.density;
         colors = HashMap()
         loadColors()
@@ -124,6 +130,18 @@ object AndroidUtils {
 
         // launch the url
         customTabsIntent.launchUrl(activity, uri)
+    }
+
+    override val cacheDir: File
+        get() = App.applicationContext.cacheDir
+
+    override fun isNetworkAvailable(): Boolean = checkIfHasNetwork()
+
+    @SuppressLint("WrongConstant")
+    fun checkIfHasNetwork(): Boolean {
+        val cm = App.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = cm.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 }
