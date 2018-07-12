@@ -21,12 +21,9 @@ object GithubService {
 
     private const val CACHE_CONTROL = "Cache-Control"
 
-    var BASE_URL = "https://api.github.com/"
-        internal set
-    var PIN_BASE_URL = "https://gh-pinned-repos.now.sh/"
-        internal set
+    const val BASE_URL = "https://api.github.com/"
 
-    val okHttp: OkHttpClient
+    private val okHttp: OkHttpClient
 
     init {
         val httpCacheDirectory = File(NativeUtils.resolver.cacheDir, "responses")
@@ -40,14 +37,9 @@ object GithubService {
                 .build()
     }
 
-    private var builder = Retrofit.Builder()
+    private val builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttp)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-
-    private var pinBuilder = Retrofit.Builder()
-            .baseUrl(PIN_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 
@@ -86,25 +78,9 @@ object GithubService {
 
     @JvmStatic
     fun changeApiBaseUrl(newApiBaseUrl: String) {
-        BASE_URL = newApiBaseUrl
-
-        builder = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        builder.baseUrl(newApiBaseUrl)
     }
 
-    @JvmStatic
-    fun changeApiPinnedBaseUrl(newApiPinBaseUrl: String) {
-        PIN_BASE_URL = newApiPinBaseUrl
-
-        pinBuilder = Retrofit.Builder()
-                .baseUrl(PIN_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-    }
-
-    val pinnedService: PinnedReposApi by lazy { pinBuilder.build().create(PinnedReposApi::class.java) }
 
     fun <S> createService(serviceClass: Class<S>): S {
         val retrofit = builder.build()
