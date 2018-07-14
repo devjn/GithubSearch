@@ -32,26 +32,18 @@ class SuggestionAdapter(private val activity: Activity, searchManager: SearchMan
     private val mSearchManager: SearchManager = searchManager
 
     fun getSuggestions(query: String, limit: Int): ArrayList<GitSuggestion>? {
-        var cursor: Cursor? = null
-        try {
-            cursor = getSearchManagerSuggestions(mSearchManager.getSearchableInfo(activity.componentName), query, limit)
-            if (cursor != null) {
-                val text1Col = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)
-                val list: ArrayList<GitSuggestion> = ArrayList(cursor.count)
-                if (cursor.moveToFirst()) {
-                    var count = 0
-                    do {
-                        list.add(GitSuggestion(cursor.getString(text1Col)))
-                        count++
-                    } while (cursor.moveToNext() && count < limit)
-                    return list
-                }
-            } else Log.w("SuggestionAdapter", "cursor is null")
-        } catch (e: RuntimeException) {
-            Log.w("SuggestionAdapter", "Search suggestions query threw an exception.", e)
-        } finally {
-            cursor?.close()
-        }
+        getSearchManagerSuggestions(mSearchManager.getSearchableInfo(activity.componentName), query, limit)?.use {
+            val text1Col = it.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)
+            val list: ArrayList<GitSuggestion> = ArrayList(it.count)
+            if (it.moveToFirst()) {
+                var count = 0
+                do {
+                    list.add(GitSuggestion(it.getString(text1Col)))
+                    count++
+                } while (it.moveToNext() && count < limit)
+                return list
+            }
+        } ?: Log.w("SuggestionAdapter", "cursor is null")
         return null
     }
 

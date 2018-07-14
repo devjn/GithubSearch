@@ -76,7 +76,7 @@ object AndroidUtils : NativeUtilsResolver {
     private fun loadColors() {
         val json: String?
         try {
-            val ins = App.applicationContext.resources.openRawResource(R.raw.colors)
+            val ins = App.appContext.resources.openRawResource(R.raw.colors)
             val size = ins.available()
             val buffer = ByteArray(size)
             ins.read(buffer)
@@ -133,13 +133,13 @@ object AndroidUtils : NativeUtilsResolver {
     }
 
     override val cacheDir: File
-        get() = App.applicationContext.cacheDir
+        get() = App.appContext.cacheDir
 
     override fun isNetworkAvailable(): Boolean = checkIfHasNetwork()
 
     @SuppressLint("WrongConstant")
     fun checkIfHasNetwork(): Boolean {
-        val cm = App.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = App.appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = cm.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }

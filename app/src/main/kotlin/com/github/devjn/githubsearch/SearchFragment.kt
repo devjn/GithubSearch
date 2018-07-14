@@ -28,7 +28,6 @@ import com.github.devjn.githubsearch.databinding.ListItemUserBinding
 import com.github.devjn.githubsearch.utils.*
 import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -37,15 +36,13 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 
-@Suppress("UNCHECKED_CAST")
 /**
  * Created by @author Jahongir on 27-Apr-17
  * devjn@jn-arts.com
  * SearchFragment
  */
+@Suppress("UNCHECKED_CAST")
 class SearchFragment<T : GitObject>() : BaseFragment() {
-
-    val TAG = SearchFragment::class.java.simpleName!!
 
     private var mData: ArrayList<T> = ArrayList()
     private var mType: Int = TYPE_USERS
@@ -73,8 +70,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         super.onCreate(savedInstanceState)
         retainInstance = true
 
-        val args = arguments
-        args?.let {
+        arguments?.let {
             if (it.containsKey(KEY_TYPE))
                 mType = it.getInt(KEY_TYPE)
             if (it.containsKey(SearchManager.QUERY)) {
@@ -122,7 +118,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             } else {
                 //this shows the top left circular progress
                 mSearchView.showProgress()
-                mDisposables.add(Observable.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
+                mDisposables.add(Single.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ list ->
@@ -252,8 +248,8 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
     }
 
     private fun getApi(query: String, page: Int = 1): Single<GitData<T>> =
-            (if (mType == TYPE_USERS) gitHubApi.getUsers(query)
-            else gitHubApi.getRepositories(query)) as Single<GitData<T>>
+            (if (mType == TYPE_USERS) gitHubApi.getUsers(query, page)
+            else gitHubApi.getRepositories(query, page)) as Single<GitData<T>>
 
     private val onError: Consumer<Throwable> by lazy {
         Consumer<Throwable> { e ->
@@ -265,6 +261,7 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
 
     companion object {
+        val TAG = SearchFragment::class.java.simpleName!!
 
         const val KEY_TYPE = "TYPE"
         const val TYPE_USERS = 0
@@ -285,7 +282,6 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             fragment.arguments = args
             return fragment
         }
-
     }
 
 }

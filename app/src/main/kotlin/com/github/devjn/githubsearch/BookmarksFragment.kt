@@ -54,8 +54,7 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView.layoutManager = mLayoutManager
         mRecyclerView.itemAnimator = DefaultItemAnimator()
-        val mDividerItemDecoration = DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation)
-        mRecyclerView.addItemDecoration(mDividerItemDecoration)
+        mRecyclerView.addItemDecoration(DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation))
         binding.emptyText.text = getString(R.string.empty_bookmarks)
         checkEmptyView()
         return binding.root
@@ -67,16 +66,16 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         val dataSource = rxDataSource.bindRecyclerView<ListItemUserBinding>(mRecyclerView, R.layout.list_item_user)
         dataSource.subscribe { viewHolder ->
             val b: ListItemUserBinding = viewHolder.viewDataBinding
-            val data = viewHolder.item
-            b.user = data as User
+            b.user = viewHolder.item as User
             b.root.setOnClickListener { onClickSubject.onNext(b) }
         }
         onClickSubject.subscribe { bind ->
-            val intent = Intent(context, UserDetailsActivity::class.java)
-            // Pass data object in the bundle and populate details activity.
             val imageView = (bind as ListItemUserBinding).imageUser
-            intent.putExtra(SearchFragment.EXTRA_DATA, bind.user)
-            intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
+            // Pass data object in the bundle and populate details activity.
+            val intent = Intent(context, UserDetailsActivity::class.java).apply {
+                putExtra(SearchFragment.EXTRA_DATA, bind.user)
+                putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
+            }
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
                     imageView, ViewCompat.getTransitionName(imageView))
             startActivity(intent, options.toBundle())
