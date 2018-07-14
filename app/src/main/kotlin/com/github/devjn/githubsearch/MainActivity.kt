@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
-import android.view.View
 import com.github.devjn.githubsearch.databinding.ActivityMainBinding
 
 
@@ -30,13 +29,11 @@ class MainActivity : BaseActivity() {
             else -> BookmarksFragment() // 'else' is used to make code cleaner
         }
 
-        supportFragmentManager.beginTransaction().replace(
-                R.id.container, fragment)
+        supportFragmentManager.beginTransaction().
+                replace(R.id.container, fragment)
                 .commit()
 
         true
     }
-
-    override fun getRoot(): View = binding.coordinator
 
 }

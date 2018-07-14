@@ -1,15 +1,12 @@
 package com.github.devjn.githubsearch
 
-import android.content.Intent
 import android.database.Cursor
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
-import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.CursorLoader
 import android.support.v4.content.Loader
-import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -43,11 +40,6 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
     private lateinit var rxDataSource: RxDataSource<User>
     private val onClickSubject = PublishSubject.create<ViewDataBinding>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bookmarks, container, false)
         mRecyclerView = binding.list
@@ -64,12 +56,12 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         super.onActivityCreated(savedInstanceState)
         rxDataSource = RxDataSource(mData)
         val dataSource = rxDataSource.bindRecyclerView<ListItemUserBinding>(mRecyclerView, R.layout.list_item_user)
-        dataSource.subscribe { viewHolder ->
+        addDisposable(dataSource.subscribe { viewHolder ->
             val b: ListItemUserBinding = viewHolder.viewDataBinding
             b.user = viewHolder.item as User
             b.root.setOnClickListener { onClickSubject.onNext(b) }
-        }
-        onClickSubject.subscribe { bind ->
+        })
+        addDisposable(onClickSubject.subscribe { bind ->
             val imageView = (bind as ListItemUserBinding).imageUser
             // Pass data object in the bundle and populate details activity.
             val intent = Intent(context, UserDetailsActivity::class.java).apply {
@@ -107,8 +99,8 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         val loader = CursorLoader(activity!!,
                 DataProvider.CONTENT_URI_BOOKMARKS,
                 null, null, null,
-                UserEntity.Tags.LOGIN.fieldName + " ASC");
-        return loader;
+                UserEntity.Tags.LOGIN.fieldName + " ASC")
+        return loader
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {

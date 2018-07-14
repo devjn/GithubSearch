@@ -1,7 +1,6 @@
 package com.github.devjn.githubsearch
 
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 
 
 /**
@@ -23,7 +22,5 @@ abstract class BaseActivity : AppCompatActivity() {
                 super.onBackPressed()
         } ?: super.onBackPressed()
     }
-
-    abstract fun getRoot() : View
 
 }
