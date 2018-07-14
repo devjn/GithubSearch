@@ -31,7 +31,7 @@ import java.nio.charset.Charset
 
 @BindingAdapter("imageUrl")
 fun loadImage(imageView: ImageView, url: String?) {
-    Glide.with(imageView.context).load(url).asBitmap().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+    Glide.with(imageView.context).load(url).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(imageView)
 }
 

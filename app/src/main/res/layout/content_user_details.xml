@@ -20,7 +20,7 @@
         android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="com.github.devjn.githubsearch.UserDetailsActivity"
-        tools:showIn="@layout/activity_user_details">
+        tools:showIn="@layout/activity_empty_container">
 
         <LinearLayout
             android:layout_width="match_parent"

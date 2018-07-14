@@ -29,5 +29,6 @@
     <string name="net_problem">Cannot load. Connection problems</string>
     <string name="user_bookmarked">%1$s is added to bookmarks</string>
     <string name="user_unbookmarked">%1$s is removed from bookmarks</string>
+    <string name="transition_profile_image">transition_profile_image</string>
 
 </resources>

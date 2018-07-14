@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.github.devjn.githubsearch.UserDetailsActivity">
+        tools:context="com.github.devjn.githubsearch.UserDetailsActivity$UserDetailsFragment">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"
@@ -33,6 +33,7 @@
                 tools:background="@drawable/gradient_02">
 
                 <ImageView
+                    android:transitionName="@string/transition_profile_image"
                     android:id="@+id/image_profile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

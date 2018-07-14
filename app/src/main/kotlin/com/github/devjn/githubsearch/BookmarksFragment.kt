@@ -63,16 +63,9 @@ class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> 
         })
         addDisposable(onClickSubject.subscribe { bind ->
             val imageView = (bind as ListItemUserBinding).imageUser
-            // Pass data object in the bundle and populate details activity.
-            val intent = Intent(context, UserDetailsActivity::class.java).apply {
-                putExtra(SearchFragment.EXTRA_DATA, bind.user)
-                putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView))
-            }
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
-                    imageView, ViewCompat.getTransitionName(imageView))
-            startActivity(intent, options.toBundle())
-        }
-        loaderManager.initLoader(1, null, this);
+            UserDetailsActivity.start(baseActivity, imageView, bind.user)
+        })
+        loaderManager.initLoader(1, null, this)
     }
 
     override fun onDestroy() {
