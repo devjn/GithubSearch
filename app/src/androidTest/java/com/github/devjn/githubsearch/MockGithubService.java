@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.mock.BehaviorDelegate;
 
 /**
@@ -23,13 +23,13 @@ public class MockGithubService implements GitHubApi {
 
     private final BehaviorDelegate<GitHubApi> delegate;
 
-    public MockGithubService(BehaviorDelegate<GitHubApi> service) {
+    MockGithubService(BehaviorDelegate<GitHubApi> service) {
         this.delegate = service;
     }
 
     @NotNull
     @Override
-    public Observable<GitData<User>> getUsers(@NotNull String keyword, int page) {
+    public Single<GitData<User>> getUsers(@NotNull String keyword, int page) {
         List<User> users = new ArrayList<>(3);
         users.add(getTestUser());
         users.add(getTestUser());
@@ -40,13 +40,13 @@ public class MockGithubService implements GitHubApi {
 
     @NotNull
     @Override
-    public Observable<GitData<Repository>> getRepositories(@NotNull String keyword, int page) {
+    public Single<GitData<Repository>> getRepositories(@NotNull String keyword, int page) {
         return null;
     }
 
     @NotNull
     @Override
-    public Observable<User> getUser(@NotNull String username) {
+    public Single<User> getUser(@NotNull String username) {
         User user = getTestUser();
         user.setName("John");
         user.setBio("Some bio");

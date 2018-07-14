@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -61,8 +61,8 @@ public class GithubApiMockAdapterTest {
         GitHubApi mockGitService = new MockGithubService(delegate);
 
         //Actual Test
-        Observable<GitData<User>> observerData = mockGitService.getUsers("devjn", 1);
-        GitData<User> data = observerData.blockingFirst();
+        Single<GitData<User>> observerData = mockGitService.getUsers("devjn", 1);
+        GitData<User> data = observerData.blockingGet();
         assertFalse(data.getIncomplete_results());
         assertEquals(3, data.getTotal_count());
         List<User> users = data.getItems();
@@ -81,8 +81,8 @@ public class GithubApiMockAdapterTest {
         GitHubApi mockGitService = new MockGithubService(delegate);
 
         //Actual Test
-        Observable<User> observerData = mockGitService.getUser("devjn");
-        User user = observerData.blockingFirst();
+        Single<User> observerData = mockGitService.getUser("devjn");
+        User user = observerData.blockingGet();
         assertNotNull(user);
         assertEquals("John", user.getName());
         assertEquals("Some bio", user.getBio());
