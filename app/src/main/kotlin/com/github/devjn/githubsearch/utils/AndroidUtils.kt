@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.databinding.BindingAdapter
+import android.databinding.ObservableInt
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -33,6 +34,11 @@ import java.nio.charset.Charset
 fun loadImage(imageView: ImageView, url: String?) {
     Glide.with(imageView.context).load(url).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE)
             .into(imageView)
+}
+
+@BindingAdapter("src")
+fun loadImage(imageView: ImageView, observable: ObservableInt) {
+    imageView.setImageResource(observable.get())
 }
 
 @BindingAdapter("drawableLang")

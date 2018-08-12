@@ -1,26 +1,16 @@
 package com.github.devjn.githubsearch
 
-import android.database.Cursor
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.CursorLoader
-import android.support.v4.content.Loader
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.github.devjn.githubsearch.databinding.FragmentBookmarksBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
-import com.github.devjn.githubsearch.db.AndroidCursor
-import com.github.devjn.githubsearch.db.DataProvider
-import com.github.devjn.githubsearch.model.db.DataSource
-import com.github.devjn.githubsearch.model.entities.UserEntity
 import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.viewmodel.BookmarksViewModel
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.subjects.PublishSubject
 
@@ -30,78 +20,38 @@ import io.reactivex.subjects.PublishSubject
  * devjn@jn-arts.com
  * BookmarksFragment
  */
-class BookmarksFragment : BaseFragment(), LoaderManager.LoaderCallbacks<Cursor> {
+class BookmarksFragment : BaseFragment<FragmentBookmarksBinding, BookmarksViewModel>() {
 
-    private lateinit var binding: FragmentBookmarksBinding
-    private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mLayoutManager: LinearLayoutManager
-
-    private var mData: ArrayList<User> = ArrayList()
     private lateinit var rxDataSource: RxDataSource<User>
-    private val onClickSubject = PublishSubject.create<ViewDataBinding>()
+    private val onClickSubject = PublishSubject.create<ListItemUserBinding>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bookmarks, container, false)
-        mRecyclerView = binding.list
-        mLayoutManager = LinearLayoutManager(activity)
-        mRecyclerView.layoutManager = mLayoutManager
-        mRecyclerView.itemAnimator = DefaultItemAnimator()
-        mRecyclerView.addItemDecoration(DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation))
-        binding.emptyText.text = getString(R.string.empty_bookmarks)
-        checkEmptyView()
-        return binding.root
+    override fun provideViewModel() = ViewModelProviders.of(this).get(BookmarksViewModel::class.java)
+    override fun provideLayoutId() = R.layout.fragment_bookmarks
+
+    override fun setupLayout() {
+        binding.list.apply {
+            layoutManager = LinearLayoutManager(activity)
+            itemAnimator = DefaultItemAnimator()
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        rxDataSource = RxDataSource(mData)
-        val dataSource = rxDataSource.bindRecyclerView<ListItemUserBinding>(mRecyclerView, R.layout.list_item_user)
+        rxDataSource = RxDataSource(emptyList())
+        val dataSource = rxDataSource.bindRecyclerView<ListItemUserBinding>(binding.list, R.layout.list_item_user)
         addDisposable(dataSource.subscribe { viewHolder ->
-            val b: ListItemUserBinding = viewHolder.viewDataBinding
-            b.user = viewHolder.item as User
-            b.root.setOnClickListener { onClickSubject.onNext(b) }
+            viewHolder.viewDataBinding.apply {
+                user = viewHolder.item
+                root.setOnClickListener { onClickSubject.onNext(this) }
+            }
         })
-        addDisposable(onClickSubject.subscribe { bind ->
-            val imageView = (bind as ListItemUserBinding).imageUser
-            UserDetailsActivity.start(baseActivity, imageView, bind.user)
+        addDisposable(onClickSubject.subscribe { bind -> viewModel.onListItemClick(baseActivity, bind) })
+
+        viewModel.usersLiveData.observe(this, Observer {
+            rxDataSource.updateDataSet(it).updateAdapter()
+            binding.progressBar.visibility = View.GONE
         })
-        loaderManager.initLoader(1, null, this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        loaderManager.destroyLoader(1)
-    }
-
-    private fun checkEmptyView() {
-        if (mData.isEmpty())
-            binding.emptyText.visibility = View.VISIBLE
-        else binding.emptyText.visibility = View.GONE
-    }
-
-    //  -------    Loader  ----------------
-
-    override fun onLoaderReset(loader: Loader<Cursor>) {
-        mData.clear()
-        rxDataSource.updateDataSet(mData).updateAdapter()
-        binding.progressBar.visibility = View.GONE
-        checkEmptyView()
-    }
-
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        val loader = CursorLoader(activity!!,
-                DataProvider.CONTENT_URI_BOOKMARKS,
-                null, null, null,
-                UserEntity.Tags.LOGIN.fieldName + " ASC")
-        return loader
-    }
-
-    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        mData.clear()
-        mData.addAll(DataSource.usersFromCursor(AndroidCursor(data), false))
-        rxDataSource.updateDataSet(mData).updateAdapter()
-        binding.progressBar.visibility = View.GONE
-        checkEmptyView()
     }
 
 

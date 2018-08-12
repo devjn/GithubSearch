@@ -1,31 +1,28 @@
 package com.github.devjn.githubsearch
 
 import android.app.SearchManager
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.provider.SearchRecentSuggestions
 import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.arlib.floatingsearchview.FloatingSearchView
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.github.devjn.githubsearch.databinding.FragmentMainBinding
 import com.github.devjn.githubsearch.databinding.ListItemRepositoryBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
 import com.github.devjn.githubsearch.utils.*
+import com.github.devjn.githubsearch.viewmodel.SearchViewModel
 import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.Single
@@ -40,63 +37,51 @@ import io.reactivex.subjects.PublishSubject
  * devjn@jn-arts.com
  * SearchFragment
  */
-@Suppress("UNCHECKED_CAST")
-class SearchFragment<T : GitObject>() : BaseFragment() {
+class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchViewModel<T>>() {
 
-    private var mData: ArrayList<T> = ArrayList()
-    private var mType: Int = TYPE_USERS
-
-    private lateinit var binding: FragmentMainBinding
-    private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mSearchView: FloatingSearchView
 
     private lateinit var rxDataSource: RxDataSource<T>
     private val onClickSubject = PublishSubject.create<ViewDataBinding>()
-    private val gitHubApi = GithubService.createService(GitHubApi::class.java)
 
     private lateinit var scrollListener: EndlessRecyclerViewScrollListener
     private lateinit var suggestionAdapter: SuggestionAdapter
     private lateinit var suggestions: SearchRecentSuggestions
 
-    private var mLastGitData: GitData<T>? = null
-    private var mLastQuery = ""
     private var isSearchIntent = false
 
+    override fun provideViewModel(): SearchViewModel<T> = ViewModelProviders.of(this).get(SearchViewModel::class.java) as SearchViewModel<T>
+    override fun provideLayoutId() = R.layout.fragment_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            if (it.containsKey(KEY_TYPE))
-                mType = it.getInt(KEY_TYPE)
-            if (it.containsKey(SearchManager.QUERY)) {
-                mLastQuery = it.getString(SearchManager.QUERY)
+        arguments?.let { args ->
+            viewModel.type = args.getInt(KEY_TYPE, SearchFragment.TYPE_USERS)
+            args.getString(SearchManager.QUERY)?.let {
+                viewModel.lastQuery = it
                 isSearchIntent = true
             }
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
-        mRecyclerView = binding.list
+    override fun setupLayout() {
         mSearchView = binding.floatingSearchView
-        mLayoutManager = LinearLayoutManager(activity)
-        scrollListener = object : EndlessRecyclerViewScrollListener(mLayoutManager) {
+
+        val linearLayoutManager = LinearLayoutManager(activity)
+        scrollListener = object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadMore(page + 1, totalItemsCount)
+                viewModel.loadMore(page + 1, totalItemsCount, onError)
             }
         }
-        mRecyclerView.apply {
-            layoutManager = mLayoutManager
+        binding.list.apply {
+            layoutManager = linearLayoutManager
             itemAnimator = DefaultItemAnimator()
             addOnScrollListener(scrollListener)
-            addItemDecoration(DividerItemDecoration(mRecyclerView.context, mLayoutManager.orientation))
+            addItemDecoration(DividerItemDecoration(context, linearLayoutManager.orientation))
         }
-        binding.emptyText.text = getString(if (mType == TYPE_USERS) R.string.find_users else R.string.find_repos)
 
         setupSearchView()
         checkEmptyView()
-        return binding.root
     }
 
 
@@ -108,11 +93,10 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
             if (oldQuery != "" && newQuery == "") {
                 suggestionAdapter.getSuggestions("", 3)?.let { mSearchView.swapSuggestions(it) }
             } else {
-                //this shows the top left circular progress
                 addDisposable(Single.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe { mSearchView.showProgress() }
+                        .doOnSubscribe { mSearchView.showProgress() } //this shows the top left circular progress
                         .doFinally { mSearchView.hideProgress() }
                         //this will swap the data and render the collapse/expand animations as necessary
                         .subscribe({ list -> mSearchView.swapSuggestions(list) },
@@ -124,12 +108,12 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
 
         mSearchView.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
             override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
-                mLastQuery = searchSuggestion.body
-                search(mLastQuery)
+                viewModel.lastQuery = searchSuggestion.body
+                search(viewModel.lastQuery)
             }
 
             override fun onSearchAction(query: String) {
-                mLastQuery = query
+                viewModel.lastQuery = query
                 search(query)
                 Log.d(TAG, "onSearchAction, query: $query")
             }
@@ -138,19 +122,17 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         mSearchView.setOnFocusChangeListener(object : FloatingSearchView.OnFocusChangeListener {
             override fun onFocus() {
                 //show history when search bar gains focus
-                suggestionAdapter.getSuggestions("", 3)
-                        ?.let { mSearchView.swapSuggestions(it) }
+                suggestionAdapter.getSuggestions("", 3)?.let { mSearchView.swapSuggestions(it) }
             }
 
             override fun onFocusCleared() {
                 //set the title of the bar so that when focus is returned a new query begins
-                mSearchView.setSearchText(mLastQuery) //BarTitle(mLastQuery)
+                mSearchView.setSearchText(viewModel.lastQuery)
             }
         })
 
-        mSearchView.setOnBindSuggestionCallback { view, leftIcon, _, _, _ ->
-            leftIcon.setImageDrawable(ResourcesCompat.getDrawable(resources,
-                    R.drawable.ic_history_black_24dp, null))
+        mSearchView.setOnBindSuggestionCallback { _, leftIcon, _, _, _ ->
+            leftIcon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_history_black_24dp, null))
             leftIcon.alpha = .36f
         }
 
@@ -159,28 +141,35 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         suggestions = SearchRecentSuggestions(context, SuggestionProvider.AUTHORITY, SuggestionProvider.MODE)
-        rxDataSource = RxDataSource(mData)
-        val dataSource = if (mType == TYPE_USERS)
-            rxDataSource.bindRecyclerView<ListItemUserBinding>(mRecyclerView, R.layout.list_item_user)
-        else rxDataSource.bindRecyclerView<ListItemRepositoryBinding>(mRecyclerView, R.layout.list_item_repository)
+        rxDataSource = RxDataSource(viewModel.data.value)
+        val dataSource = if (viewModel.type == TYPE_USERS)
+            rxDataSource.bindRecyclerView<ListItemUserBinding>(binding.list, R.layout.list_item_user)
+        else rxDataSource.bindRecyclerView<ListItemRepositoryBinding>(binding.list, R.layout.list_item_repository)
         addDisposable(dataSource.subscribe { viewHolder ->
             val b: ViewDataBinding = viewHolder.viewDataBinding
             val data = viewHolder.item
-            if (mType == TYPE_USERS)
+            if (viewModel.type == TYPE_USERS)
                 (b as ListItemUserBinding).user = data as User
             else
                 (b as ListItemRepositoryBinding).repo = data as Repository
             b.root.setOnClickListener { onClickSubject.onNext(b) }
         })
         addDisposable(onClickSubject.subscribe { bind ->
-            when (mType) {
+            when (viewModel.type) {
                 TYPE_REPOSITORIES -> AndroidUtils.startCustomTab(activity!!, (bind as ListItemRepositoryBinding).repo!!.html_url)
                 TYPE_USERS -> UserDetailsActivity.start(baseActivity, (bind as ListItemUserBinding).imageUser, bind.user)
             }
         })
+
+        viewModel.data.observe(this, Observer {
+            if (it == null) return@Observer
+            rxDataSource.updateDataSet(it).updateAdapter()
+            checkEmptyView()
+        })
+
         if (isSearchIntent) {
             isSearchIntent = false
-            search(mLastQuery)
+            search(viewModel.lastQuery)
         }
     }
 
@@ -189,37 +178,15 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         scrollListener.resetState()
         suggestions.saveRecentQuery(query, null)
 
-        addDisposable(getApi(query).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { binding.progressBar.visibility = View.VISIBLE }
-                .doFinally { binding.progressBar.visibility = View.GONE }
-                .subscribe(Consumer<GitData<T>> { gitData ->
-                    mData.clear()
-                    gitData.items?.let { mData.addAll(it) }
-                    rxDataSource.updateDataSet(mData).updateAdapter()
-                    mLastGitData = gitData
-                    if (mData.isEmpty())
-                        binding.emptyText.text = getString(R.string.nothing_found)
-                    checkEmptyView()
-                }, onError))
-    }
-
-
-    private fun loadMore(page: Int, count: Int) {
-        if (mLastGitData?.total_count == count) return
-        addDisposable(getApi(mLastQuery, page).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { binding.scrollProgress.visibility = View.VISIBLE }
-                .doFinally { binding.scrollProgress.visibility = View.GONE }
-                .subscribe(Consumer<GitData<T>> { gitData ->
-                    gitData.items?.let { mData.addAll(it) }
-                    rxDataSource.updateDataSet(mData).updateNotifyInsertedAdapter(count, mData.size)
-                }, onError))
+        viewModel.search(query, onError)
     }
 
     private fun checkEmptyView() {
-        binding.emptyText.visibility = if (mData.isEmpty()) View.VISIBLE else View.GONE
+        binding.emptyText.text = getString(if (viewModel.lastGitData != null) R.string.nothing_found else
+            if (viewModel.type == TYPE_USERS) R.string.find_users else R.string.find_repos)
+        binding.emptyText.visibility = if (viewModel.data.value!!.isEmpty()) View.VISIBLE else View.GONE
     }
+
 
     override fun onBackPressedCaptured(): Boolean {
         if (mSearchView.setSearchFocused(false)) {
@@ -228,14 +195,10 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         return super.onBackPressedCaptured()
     }
 
-    private fun getApi(query: String, page: Int = 1): Single<GitData<T>> =
-            (if (mType == TYPE_USERS) gitHubApi.getUsers(query, page)
-            else gitHubApi.getRepositories(query, page)) as Single<GitData<T>>
-
     private val onError: Consumer<Throwable> by lazy {
         Consumer<Throwable> { e ->
             Snackbar.make(binding.root, R.string.connection_problem, SNACKBAR_LENGTH)
-                    .setAction(R.string.retry) { search(mLastQuery) }.show()
+                    .setAction(R.string.retry) { search(viewModel.lastQuery) }.show()
             Log.e(TAG, "Error while getting data", e)
         }
     }
@@ -247,9 +210,6 @@ class SearchFragment<T : GitObject>() : BaseFragment() {
         const val KEY_TYPE = "TYPE"
         const val TYPE_USERS = 0
         const val TYPE_REPOSITORIES = 1
-
-        const val EXTRA_DATA = "data"
-        const val EXTRA_IMAGE_TRANSITION_NAME = "transition_name"
 
         const val SNACKBAR_LENGTH = 6000
 

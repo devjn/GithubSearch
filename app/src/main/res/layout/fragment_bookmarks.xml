@@ -5,6 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.github.devjn.githubsearch.BookmarksFragment">
 
+    <data>
+        <variable name="viewModel" type="com.github.devjn.githubsearch.viewmodel.BookmarksViewModel"/>
+        <import type="android.view.View"/>
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -55,7 +60,8 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="@dimen/spacing_medium"
-            android:visibility="gone"/>
+            android:text="@string/empty_bookmarks"
+            android:visibility="@{viewModel.usersLiveData.size() > 0 ? View.GONE : View.VISIBLE}"/>
 
         <ProgressBar
             android:id="@+id/progress_bar"

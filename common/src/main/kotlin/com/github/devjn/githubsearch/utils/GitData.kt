@@ -35,12 +35,14 @@ interface GitObject {
     val url: String;
 }
 
+@android.arch.persistence.room.Entity
 class User : GitObject, Serializable {
 
-    override val url: String;
-    val login: String;
-    val avatar_url: String;
-    val id: Long
+    override var url: String;
+    var login: String;
+    var avatar_url: String;
+    @android.arch.persistence.room.PrimaryKey
+    var id: Long
 
     // Optional
     var name: String? = null
@@ -50,6 +52,7 @@ class User : GitObject, Serializable {
     var location: String? = null
     var blog: String? = null
 
+    @android.arch.persistence.room.Ignore
     var isDetailed = false
 
     constructor() {

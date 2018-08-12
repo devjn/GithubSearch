@@ -8,13 +8,7 @@ import com.github.devjn.githubsearch.database.ISQLiteCursor
 import com.github.devjn.githubsearch.database.ISQLiteDatabase
 
 @SuppressLint("Recycle")
-class AndroidSQLiteDatabase(private val db: SQLiteDatabase?) : ISQLiteDatabase {
-
-    init {
-        if (db == null) {
-            throw IllegalArgumentException("dbHandle can't be null")
-        }
-    }
+class AndroidSQLiteDatabase(private val db: SQLiteDatabase) : ISQLiteDatabase {
 
     override fun newContentValues(): ISQLiteContentValues {
         return AndroidContentValues()
@@ -23,17 +17,16 @@ class AndroidSQLiteDatabase(private val db: SQLiteDatabase?) : ISQLiteDatabase {
     override fun query(table: String?, columns: Array<String?>?, selection: String?,
                        selectionArgs: Array<String>?, groupBy: String?, having: String?,
                        orderBy: String?): ISQLiteCursor? {
-        val cursor = db!!.query(table, columns, selection, selectionArgs, groupBy, having, orderBy) ?: return null
+        val cursor = db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy)
+                ?: return null
         return AndroidCursor(cursor)
     }
 
-    override fun delete(table: String, whereClause: String?, whereArgs: Array<String>?): Int {
-        return db!!.delete(table, whereClause, whereArgs)
-    }
+    override fun delete(table: String, whereClause: String?, whereArgs: Array<String>?) = db.delete(table, whereClause, whereArgs)
 
     override fun insert(table: String, nullColumnHack: String?, values: ISQLiteContentValues): Long {
         val values = convertFromValues(values)
-        return db!!.insert(table, nullColumnHack, values)
+        return db.insert(table, nullColumnHack, values)
     }
 
     private fun convertFromValues(initialValues: ISQLiteContentValues): ContentValues {
@@ -73,32 +66,26 @@ class AndroidSQLiteDatabase(private val db: SQLiteDatabase?) : ISQLiteDatabase {
             sql.append(whereClause)
         }
 
-        val stmt = db!!.compileStatement(sql.toString())
-        var idx = 0
-        for (bind in bindArgs) {
-            idx++
-            if (bind is String) {
-                stmt.bindString(idx, bind)
-            } else if (bind is Int) {
-                stmt.bindLong(idx, bind.toLong())
-            } else if (bind is Long) {
-                stmt.bindLong(idx, bind)
-            } else if (bind is Double) {
-                stmt.bindDouble(idx, bind)
+        val stmt = db.compileStatement(sql.toString())
+        for (idx in bindArgs.indices) {
+            val bind = bindArgs[idx]
+            when (bind) {
+                is String -> stmt.bindString(idx, bind)
+                is Int -> stmt.bindLong(idx, bind.toLong())
+                is Long -> stmt.bindLong(idx, bind)
+                is Double -> stmt.bindDouble(idx, bind)
             }
         }
         return stmt.executeUpdateDelete()
     }
 
-    override fun execSQL(statement: String) {
-        db!!.execSQL(statement)
-    }
+    override fun execSQL(statement: String) = db.execSQL(statement)
 
     override fun rawQuery(sql: String, selectionArgs: Array<String>?): ISQLiteCursor? {
-        val cursor = db!!.rawQuery(sql, selectionArgs)
+        val cursor = db.rawQuery(sql, selectionArgs)
         return if (cursor == null) null else AndroidCursor(cursor)
     }
 
-    fun getNativeDb() : SQLiteDatabase = db!!
+    fun getNativeDb(): SQLiteDatabase = db
 
 }

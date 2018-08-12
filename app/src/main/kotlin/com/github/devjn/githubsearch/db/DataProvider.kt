@@ -1,5 +1,6 @@
 package com.github.devjn.githubsearch.db
 
+import android.arch.persistence.room.Room
 import android.content.*
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
@@ -23,12 +24,12 @@ class DataProvider : ContentProvider() {
 
         const val AUTHORITY = BuildConfig.APPLICATION_ID + ".utils.DataProvider"
         val CONTENT_PROVIDER = "content://$AUTHORITY"
-//        val CONTENT_URI_SEARCH = Uri.parse(CONTENT_PROVIDER + "/" + Tables.SEARCH)
+        //        val CONTENT_URI_SEARCH = Uri.parse(CONTENT_PROVIDER + "/" + Tables.SEARCH)
         val CONTENT_URI_BOOKMARKS = Uri.parse(CONTENT_PROVIDER + "/" + UserEntity.TABLE_NAME)!!
 
         private val uriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
-//        private val SEARCH_ALLROWS = 201
+        //        private val SEARCH_ALLROWS = 201
 //        private val SEARCH_SINGLE_ROW = 202
         private const val BOOKMARKS_ALLROWS = 203
         private const val BOOKMARKS_SINGLE_ROW = 204
@@ -59,6 +60,7 @@ class DataProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         dbHelper = AndroidSQLiteDatabaseHelper(context)
+        val db = Room.databaseBuilder(context, AppDatabase::class.java, "database-name").build()
         return true
     }
 

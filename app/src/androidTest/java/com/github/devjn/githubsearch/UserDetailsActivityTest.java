@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.devjn.githubsearch.UserDetailsActivity.UserDetailsFragment;
 import com.github.devjn.githubsearch.utils.GithubGraphQL;
 import com.github.devjn.githubsearch.utils.GithubService;
 
@@ -73,8 +74,8 @@ public class UserDetailsActivityTest {
                 .setBody(RestServiceTestHelper.getStringFromFile(getInstrumentation().getContext(), fileName2)));
 
         Intent intent = new Intent();
-        intent.putExtra(SearchFragment.EXTRA_DATA, getTestUser());
-        intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
+        intent.putExtra(UserDetailsFragment.EXTRA_DATA, getTestUser());
+        intent.putExtra(UserDetailsFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
         mActivityRule.launchActivity(intent);
 
 
@@ -100,8 +101,8 @@ public class UserDetailsActivityTest {
                 .setBody(""));
 
         Intent intent = new Intent();
-        intent.putExtra(SearchFragment.EXTRA_DATA, getTestUser());
-        intent.putExtra(SearchFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
+        intent.putExtra(UserDetailsFragment.EXTRA_DATA, getTestUser());
+        intent.putExtra(UserDetailsFragment.EXTRA_IMAGE_TRANSITION_NAME, "some");
         mActivityRule.launchActivity(intent);
 
         onView(withText(R.string.empty_info)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)));

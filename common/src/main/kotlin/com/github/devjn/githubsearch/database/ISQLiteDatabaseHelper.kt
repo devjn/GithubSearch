@@ -4,10 +4,9 @@ import java.io.InputStream
 
 interface ISQLiteDatabaseHelper {
 
-    val writableDatabase: ISQLiteDatabase?
-
-    fun close()
+    val writableDatabase: ISQLiteDatabase
 
     val defaultDatabaseContents: InputStream?
 
+    fun close()
 }

@@ -14,7 +14,7 @@ class DataSource(private val dbHelper: ISQLiteDatabaseHelper) {
         const val BOOKMARKS = "BOOKMARKS"
     }
 
-    private var db: ISQLiteDatabase? = null
+    private lateinit var db: ISQLiteDatabase
 
     fun open() {
         db = dbHelper.writableDatabase

@@ -1,8 +1,10 @@
 package com.github.devjn.githubsearch
 
 import android.app.Application
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.support.v7.app.AppCompatDelegate
+import com.github.devjn.githubsearch.db.AppDatabase
 import com.github.devjn.githubsearch.utils.AndroidUtils
 
 /**
@@ -13,6 +15,14 @@ import com.github.devjn.githubsearch.utils.AndroidUtils
 
 class App : Application() {
 
+    companion object {
+        const val TAG = "GithubSearch"
+        val appDatabase by lazy { Room.databaseBuilder(appContext, AppDatabase::class.java, "database-name").build() }
+
+        lateinit var appContext: Context
+            private set
+    }
+
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
@@ -20,11 +30,5 @@ class App : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
-    companion object {
-        const val TAG = "GithubSearch"
-
-        lateinit var appContext: Context
-            private set
-    }
 
 }

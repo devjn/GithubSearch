@@ -4,6 +4,11 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context="com.github.devjn.githubsearch.SearchFragment">
 
+    <data>
+        <import type="android.view.View"/>
+        <variable name="viewModel" type="com.github.devjn.githubsearch.viewmodel.SearchViewModel"/>
+    </data>
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -38,8 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="@dimen/spacing_medium"
-            android:visibility="gone"/>
+            android:padding="@dimen/spacing_medium"/>
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -47,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:visibility="@{viewModel.progressBarVisibility}"/>
 
         <FrameLayout
             android:layout_width="match_parent"

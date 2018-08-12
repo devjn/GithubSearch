@@ -35,20 +35,17 @@ object UserEntity {
         db.insert(TABLE_NAME, null, values)
     }
 
-    fun deleteFromDB(db: ISQLiteDatabase?, id: Int) {
-        db!!.delete(TABLE_NAME, Utils.createClauseWhereFieldEqualsValue(ID, id), null)
+    fun deleteFromDB(db: ISQLiteDatabase, id: Int) {
+        db.delete(TABLE_NAME, Utils.createClauseWhereFieldEqualsValue(ID, id), null)
     }
 
-    fun selectFromDB(db: ISQLiteDatabase?, selection: String?): ISQLiteCursor? {
-        val cursor = db!!.query(TABLE_NAME, fieldNames, selection, null, null, null, null)
-        return cursor
-    }
+    fun selectFromDB(db: ISQLiteDatabase, selection: String?) = db.query(TABLE_NAME, fieldNames, selection, null, null, null, null)
+
 
     fun selectMaxIDFromDB(db: ISQLiteDatabase): ISQLiteCursor? {
         val column = ID.fieldName
         val selection = "SELECT max($column) FROM ${TABLE_NAME}"
-        val cursor = db.rawQuery(selection, null)
-        return cursor
+        return db.rawQuery(selection, null)
     }
 
     fun cursorToObject(cursor: ISQLiteCursor): User {

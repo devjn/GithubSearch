@@ -30,6 +30,9 @@ dependencies {
     implementation "com.apollographql.apollo:apollo-runtime:$apolloVersion"
     implementation "com.apollographql.apollo:apollo-rx2-support:$apolloVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+
+    compileOnly "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
 }
 
 sourceCompatibility = "1.8"
