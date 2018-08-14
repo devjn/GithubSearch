@@ -5,7 +5,6 @@ import com.github.devjn.githubsearch.database.ISQLiteDatabase
 import com.github.devjn.githubsearch.model.db.DataBaseField
 import com.github.devjn.githubsearch.model.db.DataSource
 import com.github.devjn.githubsearch.model.entities.UserEntity.Tags.ID
-import com.github.devjn.githubsearch.utils.User
 import com.github.devjn.githubsearch.utils.Utils
 
 object UserEntity {

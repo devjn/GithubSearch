@@ -6,6 +6,7 @@ import android.content.Context
 import android.databinding.BindingAdapter
 import android.databinding.ObservableInt
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.support.customtabs.CustomTabsIntent
@@ -39,6 +40,11 @@ fun loadImage(imageView: ImageView, url: String?) {
 @BindingAdapter("src")
 fun loadImage(imageView: ImageView, observable: ObservableInt) {
     imageView.setImageResource(observable.get())
+}
+
+@BindingAdapter("src")
+fun loadImage(imageView: ImageView, drawable: Drawable) {
+    imageView.setImageDrawable(drawable)
 }
 
 @BindingAdapter("drawableLang")

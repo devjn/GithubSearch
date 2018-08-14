@@ -12,9 +12,9 @@ import apple.uikit.enums.UIActivityIndicatorViewStyle
 import apple.uikit.enums.UITableViewCellStyle
 import com.github.devjn.githubsearch.Main
 import com.github.devjn.githubsearch.model.db.DataSource
-import com.github.devjn.githubsearch.utils.GitHubApi
-import com.github.devjn.githubsearch.utils.GithubService
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.service.GitHubApi
+import com.github.devjn.githubsearch.service.GithubService
+import com.github.devjn.githubsearch.model.entities.User
 import io.reactivex.Observable
 import io.reactivex.ios.schedulers.IOSSchedulers
 import io.reactivex.schedulers.Schedulers

@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch.utils
+package com.github.devjn.githubsearch.service
 
 import GetPinnedReposQuery
 import com.apollographql.apollo.ApolloClient

@@ -11,10 +11,10 @@ import apple.uikit.enums.UITableViewCellSeparatorStyle
 import apple.uikit.protocol.UISearchBarDelegate
 import apple.uikit.protocol.UISearchControllerDelegate
 import apple.uikit.protocol.UISearchResultsUpdating
-import com.github.devjn.githubsearch.utils.GitData
-import com.github.devjn.githubsearch.utils.GitHubApi
-import com.github.devjn.githubsearch.utils.GitObject
-import com.github.devjn.githubsearch.utils.GithubService
+import com.github.devjn.githubsearch.model.entities.GitData
+import com.github.devjn.githubsearch.service.GitHubApi
+import com.github.devjn.githubsearch.model.entities.GitObject
+import com.github.devjn.githubsearch.service.GithubService
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.ios.schedulers.IOSSchedulers

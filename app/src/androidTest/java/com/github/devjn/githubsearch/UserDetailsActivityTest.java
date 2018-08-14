@@ -7,9 +7,10 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.devjn.githubsearch.UserDetailsActivity.UserDetailsFragment;
-import com.github.devjn.githubsearch.utils.GithubGraphQL;
-import com.github.devjn.githubsearch.utils.GithubService;
+import com.github.devjn.githubsearch.view.UserDetailsActivity;
+import com.github.devjn.githubsearch.view.UserDetailsActivity.UserDetailsFragment;
+import com.github.devjn.githubsearch.service.GithubGraphQL;
+import com.github.devjn.githubsearch.service.GithubService;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

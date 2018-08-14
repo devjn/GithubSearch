@@ -3,11 +3,11 @@ package com.github.devjn.githubsearch.viewmodel
 import android.arch.lifecycle.MutableLiveData
 import android.databinding.ObservableInt
 import android.view.View
-import com.github.devjn.githubsearch.SearchFragment
-import com.github.devjn.githubsearch.utils.GitData
-import com.github.devjn.githubsearch.utils.GitHubApi
-import com.github.devjn.githubsearch.utils.GitObject
-import com.github.devjn.githubsearch.utils.GithubService
+import com.github.devjn.githubsearch.model.entities.GitData
+import com.github.devjn.githubsearch.model.entities.GitObject
+import com.github.devjn.githubsearch.service.GitHubApi
+import com.github.devjn.githubsearch.service.GithubService
+import com.github.devjn.githubsearch.view.SearchFragment
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -31,26 +31,26 @@ class SearchViewModel<T : GitObject> : BaseViewModel() {
     var lastQuery = ""
 
     fun search(query: String, onError: Consumer<Throwable>) {
-        disposables.add(getApi(query).subscribeOn(Schedulers.io())
+        getApi(query).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { progressBarVisibility.set(View.VISIBLE) }
                 .doFinally { progressBarVisibility.set(View.GONE) }
                 .subscribe(Consumer<GitData<T>> { gitData ->
                     data.value = gitData.items ?: emptyList()
                     lastGitData = gitData
-                }, onError))
+                }, onError).disposeOnClear()
     }
 
     fun loadMore(page: Int, count: Int, onError: Consumer<Throwable>) {
         if (lastGitData?.total_count == count) return
-        disposables.add(getApi(lastQuery, page).subscribeOn(Schedulers.io())
+        getApi(lastQuery, page).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { progressBarVisibility.set(View.VISIBLE) }
                 .doFinally { progressBarVisibility.set(View.GONE) }
                 .subscribe(Consumer<GitData<T>> { gitData ->
                     gitData.items?.let { data.value =  ArrayList(data.value).apply { addAll(it) } }
                     data.value = gitData.items ?: emptyList()
-                }, onError))
+                }, onError).disposeOnClear()
     }
 
     @Suppress("UNCHECKED_CAST")

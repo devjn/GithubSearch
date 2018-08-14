@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch.utils
+package com.github.devjn.githubsearch.service
 
 import com.github.devjn.currencyobserver.utils.NativeUtils
 import okhttp3.Cache

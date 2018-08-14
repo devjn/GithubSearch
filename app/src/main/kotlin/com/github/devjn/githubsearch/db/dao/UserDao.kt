@@ -2,7 +2,7 @@ package com.github.devjn.githubsearch.db.dao
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.model.entities.User
 
 
 /**

@@ -9,9 +9,7 @@
 
         <import type="android.text.TextUtils"/>
 
-        <variable
-            name="viewModel"
-            type="com.github.devjn.githubsearch.viewmodel.UserDetailsViewModel"/>
+        <variable name="viewModel" type="com.github.devjn.githubsearch.viewmodel.UserDetailsViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -19,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.github.devjn.githubsearch.UserDetailsActivity$UserDetailsFragment">
+        tools:context="com.github.devjn.githubsearch.view.UserDetailsActivity$UserDetailsFragment">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"
@@ -63,7 +61,7 @@
             android:layout_height="match_parent"
             android:animateLayoutChanges="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context="com.github.devjn.githubsearch.UserDetailsActivity"
+            tools:context="com.github.devjn.githubsearch.view.UserDetailsActivity"
             tools:showIn="@layout/activity_empty_container">
 
             <LinearLayout
@@ -188,7 +186,7 @@
                             android:text="@string/pinned_repos"
                             android:textColor="@color/colorAccent"/>
 
-                        <com.github.devjn.githubsearch.views.StaticGridView
+                        <com.github.devjn.githubsearch.widgets.StaticGridView
                             android:id="@+id/grid"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -218,9 +216,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            app:src="@{viewModel.bookmarkIcon}"
             app:layout_anchor="@id/app_bar"
-            app:layout_anchorGravity="bottom|end"/>
+            app:layout_anchorGravity="bottom|end"
+            app:src="@{viewModel.isBookmarked() ? @drawable/ic_bookmarked : @drawable/ic_bookmark}"/>
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

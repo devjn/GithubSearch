@@ -7,7 +7,7 @@
 
         <variable
             name="repo"
-            type="com.github.devjn.githubsearch.utils.Repository"/>
+            type="com.github.devjn.githubsearch.model.entities.Repository"/>
     </data>
 
     <FrameLayout

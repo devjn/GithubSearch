@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
 import android.support.v7.app.AppCompatActivity
 
@@ -14,7 +14,7 @@ abstract class BaseActivity : AppCompatActivity() {
         fun onBackPressedCaptured(): Boolean
     }
 
-    var onBackListener : BaseActivity.OnBackPressedListener? = null
+    var onBackListener : OnBackPressedListener? = null
 
     override fun onBackPressed() {
         onBackListener?.let {

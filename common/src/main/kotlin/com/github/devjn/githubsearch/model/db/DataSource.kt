@@ -3,8 +3,8 @@ package com.github.devjn.githubsearch.model.db
 import com.github.devjn.githubsearch.database.ISQLiteCursor
 import com.github.devjn.githubsearch.database.ISQLiteDatabase
 import com.github.devjn.githubsearch.database.ISQLiteDatabaseHelper
+import com.github.devjn.githubsearch.model.entities.User
 import com.github.devjn.githubsearch.model.entities.UserEntity
-import com.github.devjn.githubsearch.utils.User
 import com.github.devjn.githubsearch.utils.Utils
 import java.util.*
 

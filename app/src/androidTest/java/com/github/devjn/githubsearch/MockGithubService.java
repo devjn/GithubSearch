@@ -1,9 +1,9 @@
 package com.github.devjn.githubsearch;
 
-import com.github.devjn.githubsearch.utils.GitData;
-import com.github.devjn.githubsearch.utils.GitHubApi;
-import com.github.devjn.githubsearch.utils.Repository;
-import com.github.devjn.githubsearch.utils.User;
+import com.github.devjn.githubsearch.model.entities.GitData;
+import com.github.devjn.githubsearch.service.GitHubApi;
+import com.github.devjn.githubsearch.model.entities.Repository;
+import com.github.devjn.githubsearch.model.entities.User;
 
 import org.jetbrains.annotations.NotNull;
 

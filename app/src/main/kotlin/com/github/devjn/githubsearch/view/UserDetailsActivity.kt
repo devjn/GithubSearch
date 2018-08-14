@@ -1,6 +1,5 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
-import GetPinnedReposQuery
 import android.app.Activity
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
@@ -16,16 +15,17 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.databinding.FragmentUserDetailsBinding
+import com.github.devjn.githubsearch.model.entities.PinnedRepo
+import com.github.devjn.githubsearch.model.entities.User
 import com.github.devjn.githubsearch.utils.AndroidUtils
-import com.github.devjn.githubsearch.utils.User
 import com.github.devjn.githubsearch.viewmodel.UserDetailsViewModel
-import com.github.devjn.githubsearch.views.PinnedCell
+import com.github.devjn.githubsearch.widgets.PinnedCell
 import java.lang.Exception
 import java.util.*
 
@@ -82,13 +82,12 @@ class UserDetailsActivity : BaseActivity() {
             }
         }
 
-
         override fun setupLayout() {
             baseActivity.setSupportActionBar(binding.toolbar)
             baseActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             binding.toolbarLayout.setBackgroundResource(color)
-            binding.fab.setOnClickListener { viewModel.setBookmarked(!viewModel.isBookmarked, true) }
+            binding.fab.setOnClickListener { viewModel.toggleBookmarked() }
 
             Glide.with(this).load(viewModel.user.avatar_url).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE).dontAnimate().dontTransform().listener(object : RequestListener<String, Bitmap> {
                 override fun onResourceReady(resource: Bitmap?, model: String?, target: Target<Bitmap>?, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
@@ -102,13 +101,11 @@ class UserDetailsActivity : BaseActivity() {
                     return false
                 }
             }).into(binding.imageProfile)
-
         }
 
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            viewModel.setup()
             viewModel.pinnedRepos.observe(this, android.arch.lifecycle.Observer {
                 if (it == null) return@Observer
                 binding.grid.adapter = ReposAdapter(context!!, it)
@@ -134,10 +131,8 @@ class UserDetailsActivity : BaseActivity() {
             return super.onBackPressedCaptured()
         }
 
-        private fun toastNetError() = Toast.makeText(baseActivity, R.string.net_problem, Toast.LENGTH_SHORT).show()
 
-
-        inner class ReposAdapter(private val context: Context, private val products: List<GetPinnedReposQuery.Edge>) : BaseAdapter() {
+        inner class ReposAdapter(private val context: Context, private val products: List<PinnedRepo>) : BaseAdapter() {
 
             override fun getCount(): Int = products.size
 
@@ -154,13 +149,12 @@ class UserDetailsActivity : BaseActivity() {
 
                 if (convertView == null) {
                     view = PinnedCell(context)
-                    view.setData(products[position].node()!!)
+                    view.setData(products[position])
                 } else {
                     view = convertView as PinnedCell
                 }
                 view.id = position
-                val lang = products[position].node()?.primaryLanguage()?.name()
-                lang?.let {
+                products[position].language?.let {
                     val color: Int? = AndroidUtils.colors[it]
                     if (color != null)
                         view.nameTextView.setTextColor(color)

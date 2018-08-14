@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
@@ -17,7 +18,7 @@ import io.reactivex.schedulers.Schedulers
  */
 abstract class BaseViewModel : ViewModel() {
 
-    protected val disposables = CompositeDisposable()
+    private val disposables = CompositeDisposable()
 
     fun scheduleDirect(run: () -> Unit) = (Schedulers.io().scheduleDirect(run))
 
@@ -38,6 +39,13 @@ abstract class BaseViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(onSuccess, onError)
     )
+
+    /**
+     * Add to disposables to dispose during destroy
+     */
+    fun Disposable.disposeOnClear() {
+        disposables.add(this)
+    }
 
     override fun onCleared() {
         super.onCleared()

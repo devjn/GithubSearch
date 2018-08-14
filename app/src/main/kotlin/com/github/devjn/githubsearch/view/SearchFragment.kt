@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
 import android.app.SearchManager
 import android.arch.lifecycle.Observer
@@ -18,12 +18,16 @@ import android.util.Log
 import android.view.View
 import com.arlib.floatingsearchview.FloatingSearchView
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
+import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.databinding.FragmentMainBinding
 import com.github.devjn.githubsearch.databinding.ListItemRepositoryBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
+import com.github.devjn.githubsearch.model.entities.GitObject
+import com.github.devjn.githubsearch.model.entities.Repository
+import com.github.devjn.githubsearch.model.entities.User
 import com.github.devjn.githubsearch.utils.*
 import com.github.devjn.githubsearch.viewmodel.SearchViewModel
-import com.github.devjn.githubsearch.views.EndlessRecyclerViewScrollListener
+import com.github.devjn.githubsearch.widgets.EndlessRecyclerViewScrollListener
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -56,7 +60,7 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
-            viewModel.type = args.getInt(KEY_TYPE, SearchFragment.TYPE_USERS)
+            viewModel.type = args.getInt(KEY_TYPE, TYPE_USERS)
             args.getString(SearchManager.QUERY)?.let {
                 viewModel.lastQuery = it
                 isSearchIntent = true
@@ -93,7 +97,7 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
             if (oldQuery != "" && newQuery == "") {
                 suggestionAdapter.getSuggestions("", 3)?.let { mSearchView.swapSuggestions(it) }
             } else {
-                addDisposable(Single.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
+                Single.fromCallable { suggestionAdapter.getSuggestions(newQuery, 5) }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnSubscribe { mSearchView.showProgress() } //this shows the top left circular progress
@@ -101,8 +105,7 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
                         //this will swap the data and render the collapse/expand animations as necessary
                         .subscribe({ list -> mSearchView.swapSuggestions(list) },
                                 { mSearchView.clearSuggestions(); }
-                        )
-                )
+                        ).disp()
             }
         }
 
@@ -145,7 +148,7 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
         val dataSource = if (viewModel.type == TYPE_USERS)
             rxDataSource.bindRecyclerView<ListItemUserBinding>(binding.list, R.layout.list_item_user)
         else rxDataSource.bindRecyclerView<ListItemRepositoryBinding>(binding.list, R.layout.list_item_repository)
-        addDisposable(dataSource.subscribe { viewHolder ->
+        dataSource.subscribe { viewHolder ->
             val b: ViewDataBinding = viewHolder.viewDataBinding
             val data = viewHolder.item
             if (viewModel.type == TYPE_USERS)
@@ -153,13 +156,13 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
             else
                 (b as ListItemRepositoryBinding).repo = data as Repository
             b.root.setOnClickListener { onClickSubject.onNext(b) }
-        })
-        addDisposable(onClickSubject.subscribe { bind ->
+        }.disp()
+        onClickSubject.subscribe { bind ->
             when (viewModel.type) {
                 TYPE_REPOSITORIES -> AndroidUtils.startCustomTab(activity!!, (bind as ListItemRepositoryBinding).repo!!.html_url)
                 TYPE_USERS -> UserDetailsActivity.start(baseActivity, (bind as ListItemUserBinding).imageUser, bind.user)
             }
-        })
+        }.disp()
 
         viewModel.data.observe(this, Observer {
             if (it == null) return@Observer

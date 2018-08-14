@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
 import android.arch.lifecycle.ViewModel
 import android.content.Context
@@ -7,17 +7,12 @@ import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.github.devjn.githubsearch.BR
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 
 
 /**
@@ -58,7 +53,6 @@ abstract class BaseFragment<BINDING : ViewDataBinding, VIEWMODEL : ViewModel> : 
     override fun onDestroyView() {
         super.onDestroyView()
         disposables.clear()
-        viewModel.javaClass
     }
 
     override fun onDestroy() {
@@ -66,34 +60,13 @@ abstract class BaseFragment<BINDING : ViewDataBinding, VIEWMODEL : ViewModel> : 
         disposables.dispose()
     }
 
-    protected fun addDisposable(disposable: Disposable) = disposables.add(disposable)
-
-    fun scheduleDirect(run: () -> Unit) = disposables.add(Schedulers.io().scheduleDirect(run))
-
-    fun <T> runAsync(callable: () -> T, onSuccess: (Consumer<in T>), onError: Consumer<Throwable> = errorConsumer) = disposables.add(Single.fromCallable(callable)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(onSuccess, onError)
-    )
-
-    fun <T> subscribe(single: Single<T>, onSuccess: (Consumer<in T>), onError: Consumer<Throwable> = errorConsumer) = disposables.add(single
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(onSuccess, onError)
-    )
-
-    fun <T> subscribe(single: Observable<T>, onSuccess: (Consumer<in T>), onError: Consumer<Throwable> = errorConsumer) = disposables.add(single
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(onSuccess, onError)
-    )
-
     override fun onBackPressedCaptured(): Boolean = false
 
-    companion object {
-        val errorConsumer = Consumer<Throwable> {
-            Log.w(App.TAG, "Error while doing work in background", it)
-        }
+    /**
+     * Add to disposables to dispose during destroy
+     */
+    fun Disposable.disp() {
+        disposables.add(this)
     }
 
 }

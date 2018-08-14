@@ -15,10 +15,10 @@ import apple.uikit.protocol.UITableViewDataSource
 import apple.uikit.protocol.UITableViewDelegate
 import com.github.devjn.githubsearch.Main
 import com.github.devjn.githubsearch.model.db.DataSource
-import com.github.devjn.githubsearch.utils.GitHubApi
-import com.github.devjn.githubsearch.utils.GithubGraphQL
-import com.github.devjn.githubsearch.utils.GithubService
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.service.GitHubApi
+import com.github.devjn.githubsearch.service.GithubGraphQL
+import com.github.devjn.githubsearch.service.GithubService
+import com.github.devjn.githubsearch.model.entities.User
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.ios.schedulers.IOSSchedulers
 import io.reactivex.schedulers.Schedulers

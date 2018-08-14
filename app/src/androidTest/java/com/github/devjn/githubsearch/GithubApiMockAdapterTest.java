@@ -3,9 +3,9 @@ package com.github.devjn.githubsearch;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.github.devjn.githubsearch.utils.GitData;
-import com.github.devjn.githubsearch.utils.GitHubApi;
-import com.github.devjn.githubsearch.utils.User;
+import com.github.devjn.githubsearch.model.entities.GitData;
+import com.github.devjn.githubsearch.service.GitHubApi;
+import com.github.devjn.githubsearch.model.entities.User;
 
 import org.junit.Before;
 import org.junit.Test;

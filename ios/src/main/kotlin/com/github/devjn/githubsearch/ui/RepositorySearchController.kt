@@ -10,7 +10,7 @@ import apple.uikit.*
 import apple.uikit.protocol.UISearchBarDelegate
 import apple.uikit.protocol.UISearchControllerDelegate
 import apple.uikit.protocol.UISearchResultsUpdating
-import com.github.devjn.githubsearch.utils.Repository
+import com.github.devjn.githubsearch.model.entities.Repository
 import org.moe.natj.general.NatJ
 import org.moe.natj.general.Pointer
 import org.moe.natj.general.ann.NInt

@@ -7,7 +7,7 @@
 
         <variable
             name="user"
-            type="com.github.devjn.githubsearch.utils.User"/>
+            type="com.github.devjn.githubsearch.model.entities.User"/>
     </data>
 
     <LinearLayout

@@ -1,5 +1,8 @@
-package com.github.devjn.githubsearch.utils
+package com.github.devjn.githubsearch.service
 
+import com.github.devjn.githubsearch.model.entities.GitData
+import com.github.devjn.githubsearch.model.entities.Repository
+import com.github.devjn.githubsearch.model.entities.User
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

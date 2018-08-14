@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.github.devjn.githubsearch.MainActivity">
+        tools:context="com.github.devjn.githubsearch.view.MainActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator"

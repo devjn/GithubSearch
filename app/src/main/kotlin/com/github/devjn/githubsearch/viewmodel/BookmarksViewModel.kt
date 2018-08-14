@@ -3,8 +3,8 @@ package com.github.devjn.githubsearch.viewmodel
 import android.app.Activity
 import android.arch.lifecycle.ViewModel
 import com.github.devjn.githubsearch.App
-import com.github.devjn.githubsearch.UserDetailsActivity
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
+import com.github.devjn.githubsearch.view.UserDetailsActivity
 
 
 /**

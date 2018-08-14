@@ -3,7 +3,7 @@ package com.github.devjn.githubsearch.db
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import com.github.devjn.githubsearch.db.dao.UserDao
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.model.entities.User
 
 
 /**

@@ -1,4 +1,4 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
+import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.databinding.FragmentBookmarksBinding
 import com.github.devjn.githubsearch.databinding.ListItemUserBinding
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.model.entities.User
 import com.github.devjn.githubsearch.viewmodel.BookmarksViewModel
 import com.minimize.android.rxrecycleradapter.RxDataSource
 import io.reactivex.subjects.PublishSubject
@@ -40,17 +40,16 @@ class BookmarksFragment : BaseFragment<FragmentBookmarksBinding, BookmarksViewMo
         super.onActivityCreated(savedInstanceState)
         rxDataSource = RxDataSource(emptyList())
         val dataSource = rxDataSource.bindRecyclerView<ListItemUserBinding>(binding.list, R.layout.list_item_user)
-        addDisposable(dataSource.subscribe { viewHolder ->
+        dataSource.subscribe { viewHolder ->
             viewHolder.viewDataBinding.apply {
                 user = viewHolder.item
                 root.setOnClickListener { onClickSubject.onNext(this) }
             }
-        })
-        addDisposable(onClickSubject.subscribe { bind -> viewModel.onListItemClick(baseActivity, bind) })
+        }.disp()
+        onClickSubject.subscribe { bind -> viewModel.onListItemClick(baseActivity, bind) }.disp()
 
         viewModel.usersLiveData.observe(this, Observer {
             rxDataSource.updateDataSet(it).updateAdapter()
-            binding.progressBar.visibility = View.GONE
         })
     }
 

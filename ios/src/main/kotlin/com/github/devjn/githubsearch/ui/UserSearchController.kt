@@ -8,7 +8,7 @@ import apple.uikit.enums.UITableViewCellStyle
 import apple.uikit.protocol.UISearchBarDelegate
 import apple.uikit.protocol.UISearchControllerDelegate
 import apple.uikit.protocol.UISearchResultsUpdating
-import com.github.devjn.githubsearch.utils.User
+import com.github.devjn.githubsearch.model.entities.User
 import org.moe.bindings.category.UIImageViewExt
 import org.moe.natj.general.NatJ
 import org.moe.natj.general.Pointer

@@ -1,10 +1,11 @@
-package com.github.devjn.githubsearch
+package com.github.devjn.githubsearch.view
 
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
+import com.github.devjn.githubsearch.R
 import com.github.devjn.githubsearch.databinding.ActivityMainBinding
 
 
