@@ -218,14 +218,11 @@ class SearchFragment<T : GitObject> : BaseFragment<FragmentMainBinding, SearchVi
 
         fun newInstance(type: Int): Fragment = newInstance(type, null)
 
-        fun newInstance(type: Int, bundle: Bundle?): Fragment {
-            val args = Bundle()
-            args.putInt(KEY_TYPE, type)
-            bundle?.let { args.putAll(it) }
-            val fragment = if (type == TYPE_USERS) SearchFragment<User>() else SearchFragment<Repository>()
-            fragment.arguments = args
-            return fragment
-        }
+        fun newInstance(type: Int, bundle: Bundle?) =
+                (if (type == TYPE_USERS) SearchFragment<User>() else SearchFragment<Repository>()).withArgs {
+                    putInt(KEY_TYPE, type)
+                    putAllSafe(bundle)
+                }
     }
 
 }
